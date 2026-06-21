@@ -531,6 +531,7 @@ export default function OpsConsole() {
                 briefLoading={loading}
                 triage={selectedTriageRecord}
                 triageState={selectedTriageState}
+                trancheFilter={trancheFilter}
                 onTriageChange={
                   selectedId
                     ? (update) => handleTriageChange(selectedId, update)

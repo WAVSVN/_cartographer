@@ -3,38 +3,51 @@
 | Field | Value |
 |-------|-------|
 | **phase** | `product` |
-| **active_role** | `REVIEWER` |
-| **wave** | P2 |
+| **active_role** | `BUILDER` |
+| **wave** | P3 |
 | **iteration** | 1 |
-| **branch** | `product/p2-triage-state` |
+| **branch** | `product/p3-shift-handoff` (create from synced `main` after P2 merge) |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
-| **last_review** | P1 CONVERGED — `docs/reviews/product-p1-REVIEW.md` |
-| **pr** | https://github.com/WAVSVN/_cartographer/pull/4 |
+| **last_review** | P2 CONVERGED — `docs/reviews/product-p2-REVIEW.md` |
 
-## REVIEWER task — P2 triage state
+## BUILDER task — P3 shift handoff
 
-Review PR #4: per-deployment triage state (localStorage + UI).
+See `docs/PRODUCT-ROADMAP.md` P3 deliverable.
 
-### Deliverable checklist
+### Implement
 
-- [ ] States: `unacked` (default) | `acknowledged` | `investigating` | `escalated` | `cleared`
-- [ ] Persisted in `localStorage` key `goc-triage-state`
-- [ ] `DeploymentDetail`: state chips + optional note
-- [ ] Queue: triage badge per row; "My triage" filter; "Show cleared" toggle
-- [ ] Cleared items sink to bottom (hidden when toggle off)
-- [ ] `lib/triage-state.ts` typed load/save helpers
-- [ ] `npm run build` + `npm test` green
+1. `gt sync` on `main`; `gt create product/p3-shift-handoff -m "product(p3): shift notes + export handoff bundle"`
+2. **Shift notes** — operator-authored notes for the current shift (persist locally or session-scoped per spec)
+3. **Export handoff bundle** — exportable shift summary combining triage state, notes, and key deployment context for handoff lead
+4. UI in ops console toolbar or dedicated panel; operator labels, not interview copy
+5. Export format: markdown or JSON download (pick one; markdown preferred for paste into Slack/email)
 
-### Commit
+### Verify + ship
 
-`1777e70` — `product(p2): triage state — ack, investigating, escalated`
+```powershell
+npm run build; npm test
+git commit -m "product(p3): shift notes + export handoff bundle"
+git push -u origin product/p3-shift-handoff
+gt submit --no-edit
+```
 
-## BUILDER task (P2 — done)
+### Handoff after BUILDER
 
-Implemented triage state per `docs/PRODUCT-ROADMAP.md` P2. Handed off to REVIEWER.
+- `active_role` → `REVIEWER`
+- Note PR URL from `gt submit`
+
+## REVIEWER task (P2 — done)
+
+- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
+- PR #4 merged to `main`
+
+## Prior — P2 (merged)
+
+- Triage state: ack / investigating / escalated / cleared per deployment (`localStorage` + UI)
+- Commit `1777e70`
 
 ## Prior — P1 (merged)
 

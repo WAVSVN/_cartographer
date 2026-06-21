@@ -2,13 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| phase | **product** P2 |
-| branch | `product/p2-triage-state` |
-| active_role | REVIEWER |
-| last_merged | P1 — PR #3 → `main` |
-| pr | https://github.com/WAVSVN/_cartographer/pull/4 |
-| commit | `1777e70` |
-| review | pending — P2 triage state |
+| phase | **product** P3 |
+| branch | `product/p3-shift-handoff` (next) |
+| active_role | BUILDER |
+| last_merged | P2 — PR #4 → `main` |
+| review | `docs/reviews/product-p2-REVIEW.md` CONVERGED |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
 
-P2 triage state shipped for review: ack / investigating / escalated / cleared per deployment (localStorage).
+P2 triage state merged. Next: shift notes + export handoff bundle (P3).

@@ -1,16 +1,20 @@
 # WAVE HANDOFF
 
-| Field | Value |
-|-------|-------|
-| active_role | DONE |
-| wave | P7 |
-| branch | main |
-| goal | UI feels industrial, not AI slop |
-| sha | 5ab064823c715b0b36aa73a126ed232596e96573 |
-| pr | https://github.com/WAVSVN/_cartographer/pull/9 |
+| active_role | — |
+| wave | P8 (done) |
+| branch | `main` (post-merge) |
+| goal | Workbench layout — table queue, docked brief, borderless detail |
+| sha | (post-merge) |
+| pr | https://github.com/WAVSVN/_cartographer/pull/10 (merged) |
 
-## P7 — CONVERGED
+## P8 — CONVERGED
 
-PR #9 merged. Anti-slop UI pass complete per `docs/reviews/product-p7-REVIEW.md`.
+Review: `docs/reviews/product-p8-REVIEW.md` · PR #10 merged to `main`.
 
-Product roadmap P1–P7 shipped. Next product wave TBD in `docs/PRODUCT-ROADMAP.md`.
+Delivered: full-bleed console, table risk queue, `BriefDock`, `ConsoleToolbar`, inline `FleetKpis`, system fonts, underline nav, segmented filters.
+
+Build/test green at review. No open P8 blockers.
+
+## Next wave
+
+Per `docs/PRODUCT-ROADMAP.md` — P1–P8 product waves complete. Next product slice TBD (or iter/feature backlog).

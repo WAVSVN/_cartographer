@@ -5,11 +5,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        sans: ["system-ui", "Segoe UI", "sans-serif"],
+        mono: ["ui-monospace", "Cascadia Code", "monospace"],
       },
       borderRadius: {
-        ops: "6px",
+        ops: "3px",
       },
       colors: {
         ops: {

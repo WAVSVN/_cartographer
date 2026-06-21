@@ -1,28 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import type { RiskRankedDeployment } from "@/lib/types";
-import { isOverdue } from "@/lib/sla-urgency";
 
 type Props = {
+  count: number;
   onOverdueClick?: () => void;
 };
 
-export default function OverdueAlertStrip({ onOverdueClick }: Props) {
-  const [count, setCount] = useState<number | null>(null);
-
-  useEffect(() => {
-    fetch("/api/deployments")
-      .then((r) => r.json())
-      .then((data) => {
-        const list: RiskRankedDeployment[] = data.risk_ranked ?? [];
-        setCount(list.filter((d) => isOverdue(d.days_to_deadline)).length);
-      })
-      .catch(() => setCount(0));
-  }, []);
-
-  if (count === null || count === 0) return null;
+export default function OverdueAlertStrip({ count, onOverdueClick }: Props) {
+  if (count === 0) return null;
 
   const label = `${count} deployment${count === 1 ? "" : "s"} past commissioning deadline`;
 

@@ -21,6 +21,7 @@ import {
   sortWithPinsFirst,
   togglePin,
 } from "@/lib/pins";
+import { isOverdue } from "@/lib/sla-urgency";
 import BriefCard from "./BriefCard";
 import CommandPalette from "./CommandPalette";
 import DeploymentDetail, { type DeploymentDetailData } from "./DeploymentDetail";
@@ -103,6 +104,11 @@ export default function OpsConsole() {
   );
 
   const trancheFilter = searchParams.get("tranche");
+
+  const overdueCount = useMemo(
+    () => ranked.filter((d) => isOverdue(d.days_to_deadline)).length,
+    [ranked]
+  );
 
   const filtered = useMemo(() => {
     let list = ranked;
@@ -353,7 +359,7 @@ export default function OpsConsole() {
         onRunDigest={() => void runDigest()}
       />
 
-      <OverdueAlertStrip onOverdueClick={() => setFilter("overdue")} />
+      <OverdueAlertStrip count={overdueCount} onOverdueClick={() => setFilter("overdue")} />
 
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-[280px_1fr]">
         {trancheFilter && (

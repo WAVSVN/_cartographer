@@ -3,39 +3,34 @@
 | Field | Value |
 |-------|-------|
 | **phase** | `product` |
-| **active_role** | `REVIEWER` |
-| **wave** | P1 |
+| **active_role** | `BUILDER` |
+| **wave** | P2 |
 | **iteration** | 1 |
-| **branch** | `product/p1-operator-console` |
+| **branch** | `product/p2-triage-state` (create from synced `main` after P1 merge) |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
-| **pr** | https://github.com/WAVSVN/_cartographer/pull/3 |
+| **last_review** | `docs/reviews/product-p1-REVIEW.md` — CONVERGED |
 
-## BUILDER task — P1 operator console (done)
+## BUILDER task — P2 triage state
 
-See `docs/PRODUCT-ROADMAP.md` P1 acceptance.
+See `docs/PRODUCT-ROADMAP.md` P2 deliverable.
 
 ### Implement
 
-1. `gt create product/p1-operator-console` from synced `main`
-2. **API** `apps/web/app/api/deployment/[id]/route.ts` — `{ deployment, contract, runbook, risk }`
-3. **OpsConsole refactor:**
-   - Select queue item → load detail panel (facts, SLA, MW, equipment, runbook steps)
-   - Remove auto-brief on select; add "Generate brief" button
-   - Replace `PLAYBOOK` / "Interview playbook" → `SHIFT_ACTIONS` / "Shift actions"
-   - Queue filters: All | Exception | Watch | Overdue
-   - Keyboard: j/k, /, ?, Escape
-4. **layout.tsx** — replace `demo` badge with live shift clock (local time, monospace)
-5. Optional: `components/DeploymentDetail.tsx`, `components/ShortcutsHelp.tsx`
+1. `gt sync` on `main`; `gt create product/p2-triage-state -m "product(p2): triage state per deployment"`
+2. **Triage state** per deployment: `ack` / `investigating` / `escalated` — persist in `localStorage`, keyed by deployment id
+3. **UI** on queue rows and/or `DeploymentDetail`: triage controls (operator labels, not interview copy)
+4. State survives refresh; default unset for new deployments
+5. Optional: filter queue by triage state
 
 ### Verify + ship
 
 ```powershell
 npm run build; npm test
-git commit -m "product(p1): operator-first console — detail panel, runbook, keyboard nav"
-git push -u origin product/p1-operator-console
+git commit -m "product(p2): triage state — ack, investigating, escalated"
+git push -u origin product/p2-triage-state
 gt submit --no-edit
 ```
 
@@ -44,9 +39,7 @@ gt submit --no-edit
 - `active_role` → `REVIEWER`
 - Note PR URL from `gt submit`
 
-## REVIEWER task
+## REVIEWER task (P1 — done)
 
-1. Review PR (Graphite/GitHub)
-2. Write `docs/reviews/product-p1-REVIEW.md` — CONVERGED or BLOCKED
-3. If BLOCKED: `active_role` → `BUILDER`, fix review comments, `gt submit` again
-4. If CONVERGED: merge via `gh pr merge` or Graphite; handoff P2 BUILDER
+- Review: `docs/reviews/product-p1-REVIEW.md` — **CONVERGED**
+- PR #3 merged to `main`

@@ -1,20 +1,32 @@
-# WAVE HANDOFF
-
-| active_role | BUILDER |
-| wave | P9 |
-| branch | product/p9-shift-onboarding |
-
-## BUILDER — P9 shift onboarding
-
-See `docs/PITCH.md` + PRODUCT-ROADMAP P9.
-
-1. `gt create product/p9-shift-onboarding` from main
-2. `lib/onboarding.ts` — load/save `goc-onboarding-done`
-3. `ShiftOnboarding.tsx` — 3-step coach marks or compact modal:
-   - Step 1: Run morning digest (toolbar Digest or auto)
-   - Step 2: Open top exception in queue (select first ranked)
-   - Step 3: Open Handoff — add note or export preview
-4. Wire into OpsConsole; callbacks from ConsoleToolbar for handoff open
-5. Copy from PITCH 60s demo — operator language
-
-Ship `product(p9): shift onboarding — first-run guide` → REVIEWER
+# WAVE HANDOFF
+
+| active_role | REVIEWER |
+| wave | P9 |
+| branch | product/p9-shift-onboarding |
+| pr | https://github.com/WAVSVN/_cartographer/pull/11 |
+| sha | 2639511dc12819f8957d5deb6797cb74f0897093 |
+
+## REVIEWER — P9 shift onboarding
+
+Builder shipped first-run shift guide on console. Verify P9 acceptance in `docs/PRODUCT-ROADMAP.md`.
+
+### What changed
+
+- `apps/web/lib/onboarding.ts` — `isOnboardingDone()` / `markOnboardingDone()` via `goc-onboarding-done`
+- `apps/web/components/ShiftOnboarding.tsx` — 3-step compact card (digest → top queue item → handoff)
+- `OpsConsole` — shows overlay when onboarding incomplete on mount
+- `ConsoleToolbar` — `forwardRef` + `openHandoff()`; `onHandoffExport` completes tour
+
+### Verify
+
+```powershell
+cd c:\WAVSVN\components\_cartographer
+git checkout product/p9-shift-onboarding
+npm run build && npm run test
+```
+
+Manual: clear `localStorage.goc-onboarding-done`, reload `/` — tour appears; Skip / Done / Export all persist dismiss.
+
+### Prior builder notes
+
+See `docs/PITCH.md` 60s demo script for operator copy intent.

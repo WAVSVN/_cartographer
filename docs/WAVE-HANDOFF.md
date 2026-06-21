@@ -1,26 +1,22 @@
-# WAVE HANDOFF — product phase
-
-| Field | Value |
-|-------|-------|
-| **active_role** | `DONE` |
-| **wave** | P6 |
-| **branch** | `main` (post-merge) |
-| **trunk** | `main` |
-| **pr** | https://github.com/WAVSVN/_cartographer/pull/8 (merged) |
-| **sha** | post-merge |
-
-## DONE — P6 incident workspace
-
-All P6 acceptance criteria met. Review: `docs/reviews/product-p6-REVIEW.md` (CONVERGED).
-
-Shipped:
-- `GET /api/scenario` — `deployment_id`, `slip_weeks` (default 4) → `ScenarioResult` or 404
-- `lib/runbook-checks.ts` — `goc-runbook-checks` localStorage; `toggleStep`, `isStepChecked`; tested
-- **DeploymentDetail** — runbook step checkboxes; +2w/+4w scenario chips; `ScenarioPanel` inline
-- **Copy link** — clipboard `/?deploy=ID` (+ tranche when set); brief "Copied" feedback
-
-`npm run build` + `npm test` green · PR #8 merged.
-
-## Prior
-
-P1–P5 merged · P6 merged — product roadmap complete.
+# WAVE HANDOFF
+
+| Field | Value |
+|-------|-------|
+| active_role | BUILDER |
+| wave | P7 |
+| branch | product/p7-anti-slop-ui |
+| goal | UI feels industrial, not AI slop |
+
+## BUILDER — P7 anti-slop UI
+
+Read `docs/DESIGN.md` + `components/no-slop/rules.json` ui_avoid_rules (in WAVSVN repo).
+
+1. `gt create product/p7-anti-slop-ui` from main
+2. Refresh `tailwind.config.ts` + `globals.css` per DESIGN.md
+3. Add `SectionLabel` to ui.tsx; grep-replace uppercase section headers
+4. Refactor BriefCard, FleetHealthStrip, layout header, OpsConsole command bar
+5. Touch DeploymentDetail, ShiftHandoffPanel, ScenarioPanel, Pipeline/Fleet table headers
+6. Do NOT break functionality or tests — update test strings if copy changes
+
+Ship: `product(p7): anti-slop UI — industrial control room polish`
+`gt submit` → REVIEWER

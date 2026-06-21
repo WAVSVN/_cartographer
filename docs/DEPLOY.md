@@ -13,7 +13,7 @@ Vercel **Root Directory** is `apps/web` with **Include source files outside Root
 ```json
 {
   "installCommand": "cd ../.. && npm install",
-  "buildCommand": "cd ../.. && npm run build -w @cartographer/web",
+  "buildCommand": "cd ../.. && npm run build",
   "framework": "nextjs"
 }
 ```

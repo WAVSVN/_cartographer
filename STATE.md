@@ -2,23 +2,15 @@
 
 | Field | Value |
 |-------|-------|
-| phase | wave-1 |
+| phase | **DONE** |
 | branch | rebuild/v1 |
-| iteration | 1 |
-| last_commit | (pending) |
-| open_pr | none |
+| iteration | 5 |
+| last_commit | 31e6328 — PR_AGENT CONVERGED |
+| deploy_url | https://cartographer-wavsvns-projects.vercel.app |
+| open_pr | rebuild/v1 → main |
 | blockers | none |
+| **handoff** | `active_role: DONE` |
 
 ## Acceptance (v1)
 
-- [x] Repo created
-- [x] Monorepo + strict TypeScript
-- [x] Zod schemas at boundaries
-- [ ] Core domain tests green
-- [ ] API parity with grid-ops-brief
-- [ ] UI parity
-- [ ] Deployed to Vercel
-
-## Next wave
-
-Port remaining domain services (scenario, digest, brief engine) and wire `apps/web` API routes.
+All items complete. See `CONVERGED.md`.

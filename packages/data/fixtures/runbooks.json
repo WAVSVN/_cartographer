@@ -1,0 +1,38 @@
+{
+  "GEN_START_FAILURE": {
+    "title": "Generator cold-start failure (bridge)",
+    "steps": [
+      "Confirm utility tie is stable and customer load is within bridge nameplate.",
+      "Pull last 24h unit telemetry; check fuel pressure, battery, and fault codes.",
+      "If repeat failure: swap to redundant unit or escalate to CAT field service.",
+      "Notify customer ops contact within 30 minutes; log SLA clock."
+    ]
+  },
+  "GRID_INTERCONNECTION_DELAY": {
+    "title": "Grid interconnection delay",
+    "steps": [
+      "Validate remaining bridge capacity vs contracted MW.",
+      "Update customer forecast and GFA monthly demand signal.",
+      "Review extension clauses in bridge-to-permanent exhibit.",
+      "Escalate if delay threatens permanent energization milestone."
+    ]
+  },
+  "FUEL_INFRA_MISMATCH": {
+    "title": "Fuel infrastructure mismatch (hybrid microgrid)",
+    "steps": [
+      "Compare actual vs modeled gas consumption for rolling 72h window.",
+      "Inspect LNG skid capacity and vaporizer duty cycle.",
+      "Tune hybrid dispatch setpoints before adding generation.",
+      "Document variance for monthly consumption settlement."
+    ]
+  },
+  "PHASED_RAMP_BEHIND": {
+    "title": "Phased load ramp behind schedule",
+    "steps": [
+      "Reconcile customer load profile vs approved ramp chart.",
+      "Confirm available MW and redundancy for next phase step.",
+      "Schedule joint call with customer engineering within 1 business day.",
+      "Do not advance phase without signed change notice."
+    ]
+  }
+}

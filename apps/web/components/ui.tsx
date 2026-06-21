@@ -75,3 +75,29 @@ export function RiskBar({ score }: { score: number }) {
 export function Skeleton({ className = "" }: { className?: string }) {
   return <div className={`animate-pulse rounded-ops bg-ops-line/40 ${className}`} />;
 }
+
+const TRIAGE_BADGE: Record<string, string> = {
+  unacked: "border-ops-line text-ops-muted",
+  acknowledged: "border-ops-pass/40 bg-ops-pass/10 text-ops-pass",
+  investigating: "border-ops-amber/40 bg-ops-amber/10 text-ops-amber",
+  escalated: "border-ops-critical/40 bg-ops-critical/10 text-ops-critical",
+  cleared: "border-ops-line/60 bg-ops-bg text-ops-muted",
+};
+
+export function TriageBadge({
+  state,
+  short,
+}: {
+  state: string;
+  short: string;
+}) {
+  const cls = TRIAGE_BADGE[state] ?? TRIAGE_BADGE.unacked;
+  return (
+    <span
+      className={`rounded border px-1 py-px font-mono text-[10px] font-semibold ${cls}`}
+      aria-label={`Triage: ${state}`}
+    >
+      {short}
+    </span>
+  );
+}

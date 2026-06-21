@@ -4,33 +4,33 @@
 |-------|-------|
 | **phase** | `product` |
 | **active_role** | `BUILDER` |
-| **wave** | P2 |
+| **wave** | P3 |
 | **iteration** | 1 |
-| **branch** | `product/p2-triage-state` (create from synced `main` after P1 merge) |
+| **branch** | `product/p3-shift-handoff` (create from synced `main` after P2 merge) |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
-| **last_review** | `docs/reviews/product-p1-REVIEW.md` — CONVERGED |
+| **last_review** | P2 CONVERGED — `docs/reviews/product-p2-REVIEW.md` |
 
-## BUILDER task — P2 triage state
+## BUILDER task — P3 shift handoff
 
-See `docs/PRODUCT-ROADMAP.md` P2 deliverable.
+See `docs/PRODUCT-ROADMAP.md` P3 deliverable.
 
 ### Implement
 
-1. `gt sync` on `main`; `gt create product/p2-triage-state -m "product(p2): triage state per deployment"`
-2. **Triage state** per deployment: `ack` / `investigating` / `escalated` — persist in `localStorage`, keyed by deployment id
-3. **UI** on queue rows and/or `DeploymentDetail`: triage controls (operator labels, not interview copy)
-4. State survives refresh; default unset for new deployments
-5. Optional: filter queue by triage state
+1. `gt sync` on `main`; `gt create product/p3-shift-handoff -m "product(p3): shift notes + export handoff bundle"`
+2. **Shift notes** — operator-authored notes for the current shift (persist locally or session-scoped per spec)
+3. **Export handoff bundle** — exportable shift summary combining triage state, notes, and key deployment context for handoff lead
+4. UI in ops console toolbar or dedicated panel; operator labels, not interview copy
+5. Export format: markdown or JSON download (pick one; markdown preferred for paste into Slack/email)
 
 ### Verify + ship
 
 ```powershell
 npm run build; npm test
-git commit -m "product(p2): triage state — ack, investigating, escalated"
-git push -u origin product/p2-triage-state
+git commit -m "product(p3): shift notes + export handoff bundle"
+git push -u origin product/p3-shift-handoff
 gt submit --no-edit
 ```
 
@@ -39,7 +39,17 @@ gt submit --no-edit
 - `active_role` → `REVIEWER`
 - Note PR URL from `gt submit`
 
-## REVIEWER task (P1 — done)
+## REVIEWER task (P2 — done)
+
+- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
+- PR #4 merged to `main`
+
+## Prior — P2 (merged)
+
+- Triage state: ack / investigating / escalated / cleared per deployment (`localStorage` + UI)
+- Commit `1777e70`
+
+## Prior — P1 (merged)
 
 - Review: `docs/reviews/product-p1-REVIEW.md` — **CONVERGED**
 - PR #3 merged to `main`

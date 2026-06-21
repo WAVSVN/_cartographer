@@ -2,26 +2,18 @@
 
 | Field | Value |
 |-------|-------|
-| **active_role** | `PR_AGENT` |
+| **active_role** | `DONE` |
 | **wave** | 4 |
 | **iteration** | 7 |
 | **branch** | `rebuild/v1` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | `ef21bb7` |
+| **last_commit** | `181bbd2` |
 | **deploy_url** | https://cartographer-wavsvns-projects.vercel.app |
 | **blockers** | none |
 
-## Current task (PR_AGENT — v1.1 MCP)
+## Current task
 
-Open PR `rebuild/v1` → `main` for Wave 4 MCP extension (v1 PR #1 already merged).
-
-Include:
-- `packages/mcp` stdio server + `docs/MCP.md`
-- Test plan: `npm run build`, `npm test`, optional `npx cartographer-mcp` smoke
-
-## After PR_AGENT
-
-Set `active_role: DONE` when PR is open.
+Wave 4 MCP CONVERGED. v1.1 PR #2 open: https://github.com/WAVSVN/_cartographer/pull/2
 
 ## Notes
 

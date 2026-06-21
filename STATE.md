@@ -2,14 +2,14 @@
 
 | Field | Value |
 |-------|-------|
-| phase | wave-4 complete → PR_AGENT (v1.1) |
+| phase | wave-4 complete — PR #2 open |
 | branch | rebuild/v1 |
 | iteration | 7 |
-| last_commit | ef21bb7 |
+| last_commit | 181bbd2 |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
-| open_pr | pending v1.1 |
+| open_pr | #2 (v1.1 MCP) |
 | blockers | none |
-| **handoff** | `active_role: PR_AGENT, wave 4` |
+| **handoff** | `active_role: DONE` |
 
 ## Acceptance
 

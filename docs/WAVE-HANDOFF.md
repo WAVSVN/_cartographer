@@ -1,25 +1,31 @@
-# WAVE HANDOFF
-
-| active_role | BUILDER |
-| wave | P8 |
-| branch | product/p8-workbench-layout |
-| goal | Stop looking like AI dashboard — workbench layout |
-
-## BUILDER — P8 workbench
-
-Read `docs/DESIGN.md` Workbench section + PRODUCT-ROADMAP P8.
-
-Structural refactor, not just colors:
-
-1. `OpsConsole` — full viewport workbench; queue table; remove RiskBar from rows; amber pills → segmented text filters
-2. `DeploymentDetail` — unbox (no Panel wrapper)
-3. Brief — `BriefDock` bottom collapsible OR fixed bottom area; don't stack with handoff/actions panels
-4. `ShiftHandoffPanel` + shift actions → `ConsoleToolbar` in ops header row OR overflow menu
-5. `layout.tsx` — system-ui fonts; inline KPIs; solid header
-6. `Nav.tsx` — underline active tab
-7. `tailwind.config.ts` + globals — tighter radius (3px), monochrome bias
-
-Keep all behavior/tests working; update tests if selectors/copy change.
-
-Ship: `product(p8): workbench layout — table queue, docked brief, borderless detail`
-PR → REVIEWER
+# WAVE HANDOFF
+
+| active_role | REVIEWER |
+| wave | P8 |
+| branch | product/p8-workbench-layout |
+| goal | Stop looking like AI dashboard — workbench layout |
+| sha | ea51ec8 |
+| pr | https://github.com/WAVSVN/_cartographer/pull/10 |
+
+## REVIEWER — P8 workbench
+
+PR: https://github.com/WAVSVN/_cartographer/pull/10 · SHA `ea51ec8`
+
+Verify against `docs/DESIGN.md` Workbench + PRODUCT-ROADMAP P8 acceptance:
+
+1. **OpsConsole** — full-bleed grid; queue = dense table (pin, #, ID, status, risk, SLA, name); no RiskBar in rows; segmented text filters; selected row = left border accent only
+2. **DeploymentDetail** — borderless sections (`border-b`), no Panel wrapper; triage/runbook/scenarios/copy link intact
+3. **BriefDock** — bottom collapsible dock (~40vh max) when brief exists; not stacked with handoff/actions
+4. **ConsoleToolbar** — Handoff popover, Digest, Actions dropdown; shift notes + export moved out of scroll stack
+5. **layout.tsx** — system-ui fonts (no IBM Plex); solid header; FleetKpis inline in header row
+6. **Nav** — underline active tab
+7. **Theme** — `rounded-ops` 3px; deployment IDs `ops-text` not amber; amber reserved for alarms
+8. **Fleet/Pipeline** — full width; table-first; segmented filters on pipeline
+
+Build/test: `npm run build && npm test` green on branch.
+
+## BUILDER notes (done)
+
+- New: `BriefDock.tsx`, `ConsoleToolbar.tsx`, `FleetKpis.tsx`
+- `FleetHealthStrip` re-exports `FleetKpis` for compat
+- `ShiftHandoffPanel.tsx` left in tree (unused by console; logic inlined in toolbar)

@@ -3,7 +3,7 @@
 | Field | Value |
 |-------|-------|
 | **phase** | `product` |
-| **active_role** | `BUILDER` |
+| **active_role** | `REVIEWER` |
 | **wave** | P1 |
 | **iteration** | 1 |
 | **branch** | `product/p1-operator-console` |
@@ -11,8 +11,9 @@
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
+| **pr** | https://github.com/WAVSVN/_cartographer/pull/3 |
 
-## BUILDER task — P1 operator console
+## BUILDER task — P1 operator console (done)
 
 See `docs/PRODUCT-ROADMAP.md` P1 acceptance.
 

@@ -1,22 +1,45 @@
-# WAVE HANDOFF — read this first
+# WAVE HANDOFF — product phase
 
 | Field | Value |
 |-------|-------|
-| **active_role** | `DONE` |
-| **wave** | 4 |
-| **iteration** | 7 |
-| **branch** | `rebuild/v1` |
+| **phase** | `product` |
+| **active_role** | `BUILDER` |
+| **wave** | P2 |
+| **iteration** | 1 |
+| **branch** | `product/p2-triage-state` (create from synced `main` after P1 merge) |
+| **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | `181bbd2` |
-| **deploy_url** | https://cartographer-wavsvns-projects.vercel.app |
+| **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
+| **last_review** | `docs/reviews/product-p1-REVIEW.md` — CONVERGED |
 
-## Current task
+## BUILDER task — P2 triage state
 
-Wave 4 MCP CONVERGED. v1.1 PR #2 open: https://github.com/WAVSVN/_cartographer/pull/2
+See `docs/PRODUCT-ROADMAP.md` P2 deliverable.
 
-## Notes
+### Implement
 
-- v1 PR #1 merged to `main` (2026-06-11)
-- Wave 4 MCP reviewed CONVERGED in `docs/reviews/iter-7-REVIEW.md`
-- Wave 4 landed in `bc5aafb`
+1. `gt sync` on `main`; `gt create product/p2-triage-state -m "product(p2): triage state per deployment"`
+2. **Triage state** per deployment: `ack` / `investigating` / `escalated` — persist in `localStorage`, keyed by deployment id
+3. **UI** on queue rows and/or `DeploymentDetail`: triage controls (operator labels, not interview copy)
+4. State survives refresh; default unset for new deployments
+5. Optional: filter queue by triage state
+
+### Verify + ship
+
+```powershell
+npm run build; npm test
+git commit -m "product(p2): triage state — ack, investigating, escalated"
+git push -u origin product/p2-triage-state
+gt submit --no-edit
+```
+
+### Handoff after BUILDER
+
+- `active_role` → `REVIEWER`
+- Note PR URL from `gt submit`
+
+## REVIEWER task (P1 — done)
+
+- Review: `docs/reviews/product-p1-REVIEW.md` — **CONVERGED**
+- PR #3 merged to `main`

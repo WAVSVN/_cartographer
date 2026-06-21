@@ -2,11 +2,11 @@
 
 | Field | Value |
 |-------|-------|
-| phase | **product** P3 |
-| branch | `product/p3-shift-handoff` |
-| active_role | REVIEWER |
-| last_merged | P2 — PR #4 → `main` |
-| review | P3 PR open — shift handoff |
+| phase | **product** — DONE (P1–P3) |
+| branch | `main` |
+| active_role | DONE |
+| last_merged | P3 — PR #5 → `main` |
+| review | P3 CONVERGED — `docs/reviews/product-p3-REVIEW.md` |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
 
-P3 shift handoff shipped — shift notes + export bundle. Awaiting review.
+Product phase complete. Operator console, triage state, and shift handoff export all shipped.

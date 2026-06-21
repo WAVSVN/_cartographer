@@ -2,42 +2,40 @@
 
 | Field | Value |
 |-------|-------|
-| **phase** | `product` |
-| **active_role** | `REVIEWER` |
-| **wave** | P3 |
+| **phase** | `product` — **DONE** |
+| **active_role** | `DONE` |
+| **wave** | P3 (complete) |
 | **iteration** | 1 |
-| **branch** | `product/p3-shift-handoff` |
+| **branch** | `main` (post-merge) |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
-| **last_review** | P2 CONVERGED — `docs/reviews/product-p2-REVIEW.md` |
+| **last_review** | P3 CONVERGED — `docs/reviews/product-p3-REVIEW.md` |
 
-## BUILDER task — P3 shift handoff (done)
+## Product phase complete
 
-Shipped shift notes panel + export handoff bundle. See PR below.
+All product waves shipped and merged:
 
-### Implemented
+| Wave | PR | Status |
+|------|-----|--------|
+| P1 Operator console | #3 | merged |
+| P2 Triage state | #4 | merged |
+| P3 Shift handoff | #5 | merged |
+
+### P3 delivered
 
 - `apps/web/lib/shift-handoff.ts` — notes persistence (`goc-shift-notes`), `buildMarkdown`, export helpers
 - `apps/web/components/ShiftHandoffPanel.tsx` — collapsible panel with timestamped notes + export button
 - Integrated into `OpsConsole` above Shift actions
 - Export markdown: fleet summary, open exceptions + triage, shift notes, session briefs / top risks
 - Tests: `apps/web/lib/shift-handoff.test.ts`
-- **PR:** https://github.com/WAVSVN/_cartographer/pull/5
-
-## REVIEWER task — P3
-
-- Review shift handoff UX and export bundle completeness
-- React to Graphite/GitHub review comments on PR
-
-- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
-- PR #4 merged to `main`
 
 ## Prior — P2 (merged)
 
 - Triage state: ack / investigating / escalated / cleared per deployment (`localStorage` + UI)
-- Commit `1777e70`
+- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
+- PR #4 merged to `main`
 
 ## Prior — P1 (merged)
 

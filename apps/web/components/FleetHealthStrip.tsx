@@ -38,7 +38,7 @@ export default function FleetHealthStrip() {
     return (
       <div className="border-b border-ops-line bg-ops-elevated/80 px-4 py-2" aria-hidden>
         <div className="mx-auto flex max-w-7xl gap-6">
-          {[1, 2, 3, 4].map((i) => (
+          {[1, 2, 3].map((i) => (
             <div key={i} className="h-4 w-24 animate-pulse rounded bg-ops-line/50" />
           ))}
         </div>
@@ -52,11 +52,11 @@ export default function FleetHealthStrip() {
       role="status"
       aria-label="Fleet health summary"
     >
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-1 font-mono text-xs">
-        <Kpi label="MW GAP" value={`${data.gapMw}`} warn={data.gapMw > 15} />
-        <Kpi label="EXCEPTIONS" value={String(data.exceptions)} warn={data.exceptions > 0} />
+      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-1 text-xs">
+        <Kpi label="MW gap" value={`${data.gapMw}`} warn={data.gapMw > 15} />
+        <Kpi label="Exceptions" value={String(data.exceptions)} warn={data.exceptions > 0} />
         <Kpi
-          label="NEXT DEADLINE"
+          label="Next deadline"
           value={
             data.nextDeadline
               ? `${data.nextDeadline}${data.nextDays !== null ? ` · ${data.nextDays}d` : ""}`
@@ -64,7 +64,6 @@ export default function FleetHealthStrip() {
           }
           warn={data.nextDays !== null && data.nextDays <= 14}
         />
-        <span className="ml-auto hidden text-ops-muted sm:inline">SYNTHETIC FLEET · LIVE</span>
       </div>
     </div>
   );
@@ -74,7 +73,9 @@ function Kpi({ label, value, warn }: { label: string; value: string; warn?: bool
   return (
     <span className="flex items-center gap-2">
       <span className="text-ops-muted">{label}</span>
-      <span className={warn ? "text-ops-amber" : "text-ops-text"}>{value}</span>
+      <span className={`font-mono tabular-nums ${warn ? "text-ops-amber" : "text-ops-text"}`}>
+        {value}
+      </span>
     </span>
   );
 }

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FleetSummary } from "@/lib/types";
-import { PageHeader, Panel, Skeleton } from "./ui";
+import { PageHeader, Panel, SectionLabel, Skeleton } from "./ui";
 
 function MwBar({
   label,
@@ -107,7 +107,7 @@ export default function FleetView() {
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full text-left text-sm" role="table">
             <thead>
-              <tr className="border-b border-ops-line text-[10px] uppercase tracking-wider text-ops-muted">
+              <tr className="border-b border-ops-line text-xs font-medium text-ops-muted">
                 <th scope="col" className="pb-2 pr-4">
                   Tranche
                 </th>
@@ -167,7 +167,7 @@ function StatCard({
 }) {
   return (
     <div className="ops-panel p-4">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">{label}</p>
+      <SectionLabel className="block">{label}</SectionLabel>
       <p className={`mt-1 font-mono text-2xl font-semibold tabular-nums ${accent ? "text-ops-amber" : ""}`}>
         {value}
         <span className="ml-1 text-sm font-normal text-ops-muted">{unit}</span>

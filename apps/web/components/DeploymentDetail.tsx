@@ -20,7 +20,7 @@ import {
 } from "@/lib/triage-state";
 import ScenarioPanel from "./ScenarioPanel";
 import SlaCountdown from "./SlaCountdown";
-import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
+import { Panel, RiskBar, SectionLabel, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 
 
@@ -207,7 +207,7 @@ export default function DeploymentDetail({
               disabled={briefLoading}
               className="ops-btn-primary text-xs"
             >
-              {briefLoading ? "Generating…" : "Generate brief"}
+              {briefLoading ? "Loading brief…" : "Generate brief"}
             </button>
           )}
         </div>
@@ -218,9 +218,7 @@ export default function DeploymentDetail({
       {onTriageChange && (
         <div className="mb-4 rounded-ops border border-ops-line bg-ops-bg/50 px-3 py-2">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-              Triage
-            </p>
+            <SectionLabel>Triage</SectionLabel>
             <TriageBadge
               state={triageState}
               short={TRIAGE_OPTIONS.find((o) => o.id === triageState)?.short ?? "NEW"}
@@ -311,9 +309,7 @@ export default function DeploymentDetail({
 
       {contract && (
         <div className="mb-4 rounded-ops border border-ops-line bg-ops-bg/50 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-            Contract
-          </p>
+          <SectionLabel className="block">Contract</SectionLabel>
           <p className="mt-1 text-sm">{contract.customer}</p>
           <p className="mt-0.5 font-mono text-[11px] text-ops-muted">
             {contract.term_years}y · SLA {contract.uptime_sla_pct}%
@@ -329,9 +325,7 @@ export default function DeploymentDetail({
 
       {d.exception_summary && (
         <div className="mb-4 rounded-ops border border-ops-critical/30 bg-ops-critical/5 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-critical">
-            Exception
-          </p>
+          <SectionLabel className="block text-ops-critical">Exception</SectionLabel>
           {d.exception_code && (
             <p className="mt-1 font-mono text-[11px] text-ops-amber">{d.exception_code}</p>
           )}
@@ -344,9 +338,7 @@ export default function DeploymentDetail({
       {risk && (
         <div className="mb-4">
           <div className="mb-1 flex items-center justify-between">
-            <span className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-              Risk score
-            </span>
+            <SectionLabel>Risk score</SectionLabel>
             <span className="font-mono text-xs tabular-nums text-ops-critical">
               {risk.risk_score}
             </span>
@@ -360,9 +352,7 @@ export default function DeploymentDetail({
       {runbook && (
         <div>
           <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-              Runbook — {runbook.title}
-            </p>
+            <SectionLabel>Runbook — {runbook.title}</SectionLabel>
             <div className="flex gap-1" role="group" aria-label="Quick slip scenarios">
               <button
                 type="button"

@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { PipelineItem } from "@/lib/types";
 import { isDueWithin14, isOverdue } from "@/lib/sla-urgency";
 import SlaCountdown from "./SlaCountdown";
-import { PageHeader, Panel, RiskBar, Skeleton, StatusBadge } from "./ui";
+import { PageHeader, Panel, RiskBar, SectionLabel, Skeleton, StatusBadge } from "./ui";
 
 type PipelineFilter = "all" | "overdue" | "due-14";
 
@@ -92,7 +92,7 @@ export default function PipelineView() {
       <Panel className="hidden overflow-x-auto md:block">
         <table className="w-full text-left text-sm" role="table">
           <thead>
-            <tr className="border-b border-ops-line text-[10px] uppercase tracking-wider text-ops-muted">
+            <tr className="border-b border-ops-line text-xs font-medium text-ops-muted">
               <th scope="col" className="p-2">
                 ID
               </th>

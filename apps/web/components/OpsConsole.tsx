@@ -29,7 +29,7 @@ import OverdueAlertStrip from "./OverdueAlertStrip";
 import ShiftHandoffPanel from "./ShiftHandoffPanel";
 import ShortcutsHelp from "./ShortcutsHelp";
 import SlaCountdown from "./SlaCountdown";
-import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
+import { Panel, RiskBar, SectionLabel, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 const REFRESH_MS = 5 * 60 * 1000;
 
@@ -385,9 +385,7 @@ export default function OpsConsole() {
         >
           <div className="p-3 lg:p-4">
             <div className="mb-2 hidden items-center justify-between lg:flex">
-              <h2 className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-                Risk queue
-              </h2>
+              <SectionLabel as="h2">Risk queue</SectionLabel>
               <button
                 type="button"
                 onClick={() => void runDigest()}
@@ -569,7 +567,7 @@ export default function OpsConsole() {
                 <Skeleton className="h-4 w-32" />
                 <Skeleton className="h-20 w-full" />
                 <Skeleton className="h-4 w-full" />
-                <p className="text-xs text-ops-muted">Generating brief…</p>
+                <p className="text-xs text-ops-muted">Loading brief…</p>
               </div>
             ) : latest ? (
               <BriefCard response={latest} showTools={showTools} title="Active brief" />
@@ -577,9 +575,9 @@ export default function OpsConsole() {
 
             {history.length > 1 && (
               <div className="mt-4">
-                <h3 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
+                <SectionLabel as="h3" className="mb-2 block">
                   Session audit
-                </h3>
+                </SectionLabel>
                 <ul className="space-y-1">
                   {history.slice(1, 5).map((h) => (
                     <li
@@ -617,17 +615,14 @@ export default function OpsConsole() {
               role="search"
               aria-label="Run operations scenario"
             >
-              <div className="relative flex-1">
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-ops-muted">
-                  &gt;
-                </span>
+              <div className="flex-1">
                 <input
                   ref={commandRef}
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="run scenario…"
-                  className="ops-input w-full pl-7"
+                  className="ops-input w-full"
                   disabled={loading}
                   aria-label="Scenario command"
                 />

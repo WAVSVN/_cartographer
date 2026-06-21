@@ -1,5 +1,19 @@
 import type { ReactNode } from "react";
 
+export function SectionLabel({
+  children,
+  className = "",
+  as: Tag = "span",
+}: {
+  children: ReactNode;
+  className?: string;
+  as?: "span" | "p" | "h2" | "h3" | "label";
+}) {
+  return (
+    <Tag className={`text-xs font-medium text-ops-muted ${className}`}>{children}</Tag>
+  );
+}
+
 export function PageHeader({
   title,
   subtitle,
@@ -32,9 +46,9 @@ export function Panel({
   return (
     <section className={`ops-panel p-4 ${className}`}>
       {title && (
-        <h2 className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
+        <SectionLabel as="h2" className="mb-3 block">
           {title}
-        </h2>
+        </SectionLabel>
       )}
       {children}
     </section>
@@ -42,8 +56,14 @@ export function Panel({
 }
 
 export function StatusBadge({ status }: { status: string }) {
-  const code =
-    status === "exception" ? "EXC" : status === "watch" ? "WCH" : "OK";
+  const label =
+    status === "exception" ? "Exception" : status === "watch" ? "Watch" : "OK";
+  const dot =
+    status === "exception"
+      ? "bg-ops-critical"
+      : status === "watch"
+        ? "bg-ops-amber"
+        : "bg-ops-pass";
   const cls =
     status === "exception"
       ? "border-ops-critical/40 bg-ops-critical/10 text-ops-critical"
@@ -53,10 +73,11 @@ export function StatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`rounded border px-1 py-px font-mono text-[10px] font-semibold ${cls}`}
+      className={`inline-flex items-center gap-1 rounded border px-1.5 py-px text-[10px] font-medium ${cls}`}
       aria-label={`Status: ${status}`}
     >
-      {code}
+      <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} aria-hidden />
+      {label}
     </span>
   );
 }

@@ -1,4 +1,5 @@
 import type { ScenarioResult } from "@cartographer/schemas";
+import { SectionLabel } from "./ui";
 
 type Props = {
   result: ScenarioResult;
@@ -16,9 +17,7 @@ export default function ScenarioPanel({ result, loading }: Props) {
       aria-busy={loading}
     >
       <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-          Slip scenario — {result.slip_weeks}w
-        </p>
+        <SectionLabel>Slip scenario — {result.slip_weeks}w</SectionLabel>
         {result.sla_at_risk && (
           <span className="font-mono text-[10px] text-ops-critical">SLA at risk</span>
         )}

@@ -1,22 +1,28 @@
-# WAVE HANDOFF
-
-| Field | Value |
-|-------|-------|
-| active_role | BUILDER |
-| wave | P7 |
-| branch | product/p7-anti-slop-ui |
-| goal | UI feels industrial, not AI slop |
-
-## BUILDER — P7 anti-slop UI
-
-Read `docs/DESIGN.md` + `components/no-slop/rules.json` ui_avoid_rules (in WAVSVN repo).
-
-1. `gt create product/p7-anti-slop-ui` from main
-2. Refresh `tailwind.config.ts` + `globals.css` per DESIGN.md
-3. Add `SectionLabel` to ui.tsx; grep-replace uppercase section headers
-4. Refactor BriefCard, FleetHealthStrip, layout header, OpsConsole command bar
-5. Touch DeploymentDetail, ShiftHandoffPanel, ScenarioPanel, Pipeline/Fleet table headers
-6. Do NOT break functionality or tests — update test strings if copy changes
-
-Ship: `product(p7): anti-slop UI — industrial control room polish`
-`gt submit` → REVIEWER
+# WAVE HANDOFF
+
+| Field | Value |
+|-------|-------|
+| active_role | REVIEWER |
+| wave | P7 |
+| branch | product/p7-anti-slop-ui |
+| goal | UI feels industrial, not AI slop |
+| sha | 1ec38533305080e06ee6c435968194347de9da07 |
+| pr | https://github.com/WAVSVN/_cartographer/pull/9 |
+
+## REVIEWER — P7 anti-slop UI
+
+PR #9 — `product(p7): anti-slop UI — industrial control room polish`
+
+Verify against `docs/DESIGN.md` + P7 acceptance in `docs/PRODUCT-ROADMAP.md`:
+
+- [ ] Flat panels, no body grid, ops-link nav accent, amber reserved for alarms
+- [ ] `SectionLabel` used instead of uppercase tracking headers
+- [ ] BriefCard left-border severity; no VALID when ok; Next steps / Sources
+- [ ] FleetHealthStrip sentence-case; no SYNTHETIC FLEET theater
+- [ ] OpsConsole plain input (no `>`); Loading brief copy
+- [ ] StatusBadge readable labels with status dot
+- [ ] Simplified header branding
+- [x] `npm run build` + `npm test` green
+
+Note: `gt submit` blocked on stale p6 stack; PR created via `gh pr create`.
+

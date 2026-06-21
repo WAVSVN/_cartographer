@@ -2,15 +2,17 @@
 
 | Field | Value |
 |-------|-------|
-| phase | **DONE** |
+| phase | wave-4 complete — PR #2 open |
 | branch | rebuild/v1 |
-| iteration | 5 |
-| last_commit | 31e6328 — PR_AGENT CONVERGED |
+| iteration | 7 |
+| last_commit | 181bbd2 |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
-| open_pr | rebuild/v1 → main |
+| open_pr | #2 (v1.1 MCP) |
 | blockers | none |
 | **handoff** | `active_role: DONE` |
 
-## Acceptance (v1)
+## Acceptance
 
-All items complete. See `CONVERGED.md`.
+- [x] v1 complete (see CONVERGED.md)
+- [x] Wave 4 MCP stdio server (`bc5aafb`)
+- [x] Wave 4 review CONVERGED (`docs/reviews/iter-7-REVIEW.md`)

@@ -5,7 +5,7 @@
 | phase | wave-5 complete → PR_AGENT |
 | branch | rebuild/v1 |
 | iteration | 4 |
-| last_commit | 1e788e6 — wave(5): Vercel deploy config |
+| last_commit | 76f55a5 — wave(5): fix Vercel build |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
 | open_pr | none |
 | blockers | none |

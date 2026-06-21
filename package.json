@@ -4,7 +4,7 @@
   "workspaces": ["packages/*", "apps/*"],
   "scripts": {
     "build": "npm run build -w @cartographer/schemas && npm run build -w @cartographer/data && npm run build -w @cartographer/core && npm run build -w @cartographer/mcp && npm run build -w @cartographer/web",
-    "test": "npm run test -w @cartographer/core && npm run test -w @cartographer/mcp",
+    "test": "npm run test -w @cartographer/core && npm run test -w @cartographer/mcp && npm run test -w @cartographer/web",
     "typecheck": "npm run typecheck -ws --if-present"
   },
   "devDependencies": {

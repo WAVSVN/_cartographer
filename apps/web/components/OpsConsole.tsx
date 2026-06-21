@@ -16,6 +16,7 @@ import {
 } from "@/lib/triage-state";
 import BriefCard from "./BriefCard";
 import DeploymentDetail, { type DeploymentDetailData } from "./DeploymentDetail";
+import ShiftHandoffPanel from "./ShiftHandoffPanel";
 import ShortcutsHelp from "./ShortcutsHelp";
 import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
@@ -432,6 +433,8 @@ export default function OpsConsole() {
                 }
               />
             </div>
+
+            <ShiftHandoffPanel ranked={ranked} triageMap={triageMap} history={history} />
 
             <Panel title="Shift actions" className="mb-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

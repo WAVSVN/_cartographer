@@ -2,15 +2,16 @@
 
 | Field | Value |
 |-------|-------|
-| phase | **DONE** |
+| phase | wave-4 → builder (MCP) |
 | branch | rebuild/v1 |
-| iteration | 5 |
-| last_commit | 31e6328 — PR_AGENT CONVERGED |
+| iteration | 6 |
+| last_commit | PR #1 merged to main |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
-| open_pr | rebuild/v1 → main |
+| open_pr | none (PR #1 merged) |
 | blockers | none |
-| **handoff** | `active_role: DONE` |
+| **handoff** | `active_role: BUILDER, wave 4` |
 
-## Acceptance (v1)
+## Acceptance
 
-All items complete. See `CONVERGED.md`.
+- [x] v1 complete (see CONVERGED.md)
+- [ ] Wave 4 MCP stdio server

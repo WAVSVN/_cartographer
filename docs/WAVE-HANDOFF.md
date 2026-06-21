@@ -4,42 +4,30 @@
 
 | Field | Value |
 |-------|-------|
-| **active_role** | `BUILDER` |
+| **active_role** | `REVIEWER` |
 | **wave** | 3 |
-| **iteration** | 3 |
+| **iteration** | 4 |
 | **branch** | `rebuild/v1` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | (pending wave 3) |
+| **last_commit** | `e7c6a30` |
 | **blockers** | none |
 
-## Current task (BUILDER — Wave 3 UI parity)
+## Current task (REVIEWER — Wave 3 UI parity)
 
-Port pages from prototype `c:\WAVSVN\components\grid-ops-brief\site`:
+Review wave 3 commit `e7c6a30` vs REBUILD-SPEC Wave 3:
 
 1. Ops console (`/`) — risk-ranked queue, scenario chat, morning digest
 2. Fleet (`/fleet`) — MW/GFA rollups
 3. Pipeline (`/pipeline`) — bridge→permanent deadlines, mobile cards
 4. About (`/about`) — integration map
 
-**Requirements:**
+**Verify:** visual parity ~8/10 vs prototype; mobile pipeline cards; `npm run build` + `npm test` green.
 
-- Tailwind styling; fetch from local API routes (not direct core imports in client components)
-- Shared nav/layout matching prototype UX
-- **Done when:** visual parity ~8/10 vs prototype; mobile pipeline cards work
+**Deliverable:** `docs/reviews/iter-4-REVIEW.md` with verdict `CONVERGED` or `BLOCKED`.
 
-**Verify:** `npm run build` + `npm test` from repo root.
+## After REVIEWER — spawn next role per ORCHESTRATION.md
 
-**Git:** commit `wave(3): UI console, fleet, pipeline, about`, push `rebuild/v1`.
-
-**Handoff after success:** set `active_role` → `REVIEWER`, `wave` → 3, bump `iteration`, update `last_commit`.
-
-## After BUILDER — spawn REVIEWER
-
-Reviewer (fresh subagent, **readonly**):
-
-1. Review wave commit vs REBUILD-SPEC Wave 3.
-2. Write `docs/reviews/iter-{N}-REVIEW.md` with verdict `CONVERGED` or `BLOCKED`.
-3. Update this file per ORCHESTRATION.md.
+If CONVERGED → wave 4 (MCP optional) or wave 5 (deploy).
 
 ## Do not
 

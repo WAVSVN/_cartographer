@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FleetSummary } from "@/lib/types";
-import { PageHeader, Panel, SectionLabel, Skeleton } from "./ui";
+import { PageHeader, SectionLabel, Skeleton } from "./ui";
 
 function MwBar({
   label,
@@ -27,11 +27,11 @@ function MwBar({
           <span className="text-ops-muted"> / </span>
           {contracted}
           <span className="text-ops-muted"> MW</span>
-          {gap > 0 && <span className="ml-2 text-ops-amber">−{gap.toFixed(1)}</span>}
+          {gap > 0 && <span className="ml-2 text-ops-critical">−{gap.toFixed(1)}</span>}
         </span>
       </div>
       <div className="flex h-2 overflow-hidden rounded-full bg-ops-bg">
-        <div className="bg-ops-amber/90 transition-all" style={{ width: `${availPct}%` }} />
+        <div className="bg-ops-pass/80 transition-all" style={{ width: `${availPct}%` }} />
         <div className="bg-ops-critical/50" style={{ width: `${gapPct}%` }} />
       </div>
     </div>
@@ -49,7 +49,7 @@ export default function FleetView() {
 
   if (!fleet) {
     return (
-      <div className="mx-auto max-w-7xl space-y-4 p-4">
+      <div className="space-y-4 p-4">
         <Skeleton className="h-8 w-48" />
         <div className="grid gap-4 sm:grid-cols-3">
           <Skeleton className="h-20" />
@@ -66,20 +66,23 @@ export default function FleetView() {
     : 0;
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5 p-4">
+    <div className="space-y-5 p-4">
       <PageHeader
         title="Fleet & GFA"
         subtitle={`${gapPct}% capacity gap across synthetic fleet`}
       />
 
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 border-b border-ops-line pb-5 sm:grid-cols-3">
         <StatCard label="Contracted" value={`${fleet.total_contracted_mw}`} unit="MW" />
         <StatCard label="Available" value={`${fleet.total_available_mw}`} unit="MW" />
         <StatCard label="Gap" value={`${fleet.total_gap_mw.toFixed(1)}`} unit="MW" accent />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Panel title="Bridge vs permanent">
+      <div className="grid gap-6 border-b border-ops-line pb-5 lg:grid-cols-2">
+        <div>
+          <SectionLabel as="h2" className="mb-3 block">
+            Bridge vs permanent
+          </SectionLabel>
           <div className="space-y-4">
             <MwBar
               label="Bridge"
@@ -92,18 +95,24 @@ export default function FleetView() {
               available={fleet.by_type.permanent.available_mw}
             />
           </div>
-        </Panel>
+        </div>
 
-        <Panel title="By basin">
+        <div>
+          <SectionLabel as="h2" className="mb-3 block">
+            By basin
+          </SectionLabel>
           <div className="space-y-4">
             {Object.entries(fleet.by_basin).map(([basin, b]) => (
               <MwBar key={basin} label={basin} contracted={b.contracted_mw} available={b.available_mw} />
             ))}
           </div>
-        </Panel>
+        </div>
       </div>
 
-      <Panel title="GFA tranche rollup">
+      <div>
+        <SectionLabel as="h2" className="mb-3 block">
+          GFA tranche rollup
+        </SectionLabel>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full text-left text-sm" role="table">
             <thead>
@@ -128,15 +137,15 @@ export default function FleetView() {
             <tbody>
               {tranches.map(([t, row]) => (
                 <tr key={t} className="border-b border-ops-line/40">
-                  <td className="py-2 font-mono text-xs text-ops-amber">{t}</td>
+                  <td className="py-2 font-mono text-xs text-ops-text">{t}</td>
                   <td className="py-2 font-mono text-xs">{row.contracted_mw}</td>
                   <td className="py-2 font-mono text-xs">{row.available_mw}</td>
-                  <td className="py-2 font-mono text-xs text-ops-amber">{row.gap_mw.toFixed(1)}</td>
+                  <td className="py-2 font-mono text-xs text-ops-critical">{row.gap_mw.toFixed(1)}</td>
                   <td className="py-2">
                     {row.stressed_count > 0 ? (
                       <Link
                         href={`/?tranche=${encodeURIComponent(t)}`}
-                        className="font-mono text-xs text-ops-critical hover:underline"
+                        className="font-mono text-xs text-ops-link hover:underline"
                       >
                         View {row.stressed_count}
                       </Link>
@@ -149,7 +158,7 @@ export default function FleetView() {
             </tbody>
           </table>
         </div>
-      </Panel>
+      </div>
     </div>
   );
 }
@@ -166,9 +175,9 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <div className="ops-panel p-4">
+    <div>
       <SectionLabel className="block">{label}</SectionLabel>
-      <p className={`mt-1 font-mono text-2xl font-semibold tabular-nums ${accent ? "text-ops-amber" : ""}`}>
+      <p className={`mt-1 font-mono text-2xl font-semibold tabular-nums ${accent ? "text-ops-critical" : ""}`}>
         {value}
         <span className="ml-1 text-sm font-normal text-ops-muted">{unit}</span>
       </p>

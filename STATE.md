@@ -2,13 +2,13 @@
 
 | Field | Value |
 |-------|-------|
-| phase | wave-2 complete → reviewer |
+| phase | wave-3 → builder |
 | branch | rebuild/v1 |
-| iteration | 2 |
-| last_commit | wave(2): apps/web API routes — core parity (`c45da6b`) |
+| iteration | 3 |
+| last_commit | review(2): wave 2 CONVERGED — handoff wave 3 |
 | open_pr | none |
 | blockers | none |
-| **handoff** | `docs/WAVE-HANDOFF.md` (active_role: REVIEWER, wave 2) |
+| **handoff** | `docs/WAVE-HANDOFF.md` (active_role: BUILDER, wave 3) |
 
 ## Acceptance (v1)
 
@@ -22,4 +22,4 @@
 
 ## Next wave
 
-See **`docs/WAVE-HANDOFF.md`** — Reviewer should verify wave 2, then BUILDER runs wave 3 (UI).
+Wave 3 UI — see `docs/WAVE-HANDOFF.md`.

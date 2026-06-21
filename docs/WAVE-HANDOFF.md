@@ -4,41 +4,45 @@
 
 | Field | Value |
 |-------|-------|
-| **active_role** | `REVIEWER` |
-| **wave** | 2 |
-| **iteration** | 2 |
+| **active_role** | `BUILDER` |
+| **wave** | 3 |
+| **iteration** | 3 |
 | **branch** | `rebuild/v1` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | `c45da6b` wave(2) |
+| **last_commit** | (pending wave 3) |
 | **blockers** | none |
 
-## Current task (REVIEWER)
+## Current task (BUILDER — Wave 3 UI parity)
 
-Review **Wave 2** deliverable (`c45da6b`):
+Port pages from prototype `c:\WAVSVN\components\grid-ops-brief\site`:
 
-1. Read diff since `1107c8c` (wave 1) or review wave 2 commit.
-2. Write `docs/reviews/iter-2-REVIEW.md` with verdict `CONVERGED` or `BLOCKED`.
-3. Check: routes thin, Zod at boundaries if added, build/test green, API shape matches spec.
-4. Update this file per ORCHESTRATION.md (next BUILDER wave 3 or fixes if BLOCKED).
+1. Ops console (`/`) — risk-ranked queue, scenario chat, morning digest
+2. Fleet (`/fleet`) — MW/GFA rollups
+3. Pipeline (`/pipeline`) — bridge→permanent deadlines, mobile cards
+4. About (`/about`) — integration map
+
+**Requirements:**
+
+- Tailwind styling; fetch from local API routes (not direct core imports in client components)
+- Shared nav/layout matching prototype UX
+- **Done when:** visual parity ~8/10 vs prototype; mobile pipeline cards work
+
+**Verify:** `npm run build` + `npm test` from repo root.
+
+**Git:** commit `wave(3): UI console, fleet, pipeline, about`, push `rebuild/v1`.
+
+**Handoff after success:** set `active_role` → `REVIEWER`, `wave` → 3, bump `iteration`, update `last_commit`.
+
+## After BUILDER — spawn REVIEWER
 
 Reviewer (fresh subagent, **readonly**):
 
-1. Read diff since `last_commit` in handoff (or review wave commit).
+1. Review wave commit vs REBUILD-SPEC Wave 3.
 2. Write `docs/reviews/iter-{N}-REVIEW.md` with verdict `CONVERGED` or `BLOCKED`.
-3. Check: routes thin, Zod at boundaries if added, build/test green, API shape matches spec.
-4. Update this file:
-   - If `CONVERGED` and wave < 5: `active_role` → `BUILDER`, increment `wave`, write next task from REBUILD-SPEC.
-   - If `BLOCKED`: `active_role` → `BUILDER`, same wave, list fixes in handoff.
-   - If all waves done: `active_role` → `PR_AGENT`.
-
-## After all waves — PR_AGENT
-
-1. `gh pr create` from `rebuild/v1` → `main` with summary + test plan.
-2. Write `CONVERGED.md` at repo root.
-3. Set `active_role` → `DONE`.
+3. Update this file per ORCHESTRATION.md.
 
 ## Do not
 
-- Re-implement domain logic in routes (use `@cartographer/core`).
+- Re-implement domain logic in UI (use API routes).
 - Skip commit/push between waves.
 - Use pnpm (host uses **npm workspaces**).

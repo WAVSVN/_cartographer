@@ -2,22 +2,24 @@
 
 | Field | Value |
 |-------|-------|
-| **active_role** | `BUILDER` |
+| **active_role** | `REVIEWER` |
 | **wave** | P6 |
 | **branch** | `product/p6-incident-workspace` |
 | **trunk** | `main` |
+| **pr** | https://github.com/WAVSVN/_cartographer/pull/8 |
+| **sha** | `91dfac4` |
 
-## BUILDER — P6 incident workspace
+## REVIEWER — P6 incident workspace
 
-See `docs/PRODUCT-ROADMAP.md` P6.
+See `docs/PRODUCT-ROADMAP.md` P6 acceptance checklist.
 
-1. `gt sync` → `gt create product/p6-incident-workspace`
-2. API `GET /api/scenario` — query params deployment_id, slip_weeks (default 4)
-3. `lib/runbook-checks.ts` + tests
-4. DeploymentDetail: runbook checklist, +2w/+4w scenario chips, ScenarioResult inline panel, copy link
-5. Ship `product(p6): incident workspace — runbook checks, quick scenarios` + `gt submit`
+Shipped:
+- `GET /api/scenario` — `deployment_id`, `slip_weeks` (default 4) → `ScenarioResult` or 404
+- `lib/runbook-checks.ts` — `goc-runbook-checks` localStorage; `toggleStep`, `isStepChecked`; tested
+- **DeploymentDetail** — runbook step checkboxes; +2w/+4w scenario chips; `ScenarioPanel` inline
+- **Copy link** — clipboard `/?deploy=ID` (+ tranche when set); brief "Copied" feedback
 
-Handoff → REVIEWER
+`npm run build` + `npm test` green · PR #8 submitted.
 
 ## Prior
 

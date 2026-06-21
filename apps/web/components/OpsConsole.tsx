@@ -22,11 +22,13 @@ import {
   togglePin,
 } from "@/lib/pins";
 import { isOverdue } from "@/lib/sla-urgency";
+import { isOnboardingDone, markOnboardingDone } from "@/lib/onboarding";
 import BriefDock from "./BriefDock";
 import CommandPalette from "./CommandPalette";
-import ConsoleToolbar from "./ConsoleToolbar";
+import ConsoleToolbar, { type ConsoleToolbarHandle } from "./ConsoleToolbar";
 import DeploymentDetail, { type DeploymentDetailData } from "./DeploymentDetail";
 import OverdueAlertStrip from "./OverdueAlertStrip";
+import ShiftOnboarding from "./ShiftOnboarding";
 import ShortcutsHelp from "./ShortcutsHelp";
 import SlaCountdown from "./SlaCountdown";
 import { SectionLabel, Skeleton, StatusBadge, TriageBadge } from "./ui";
@@ -115,14 +117,23 @@ export default function OpsConsole() {
   const [pins, setPins] = useState<string[]>([]);
   const [queueOpen, setQueueOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [digestLoading, setDigestLoading] = useState(false);
   const booted = useRef(false);
   const commandRef = useRef<HTMLInputElement>(null);
   const detailRef = useRef<HTMLDivElement>(null);
+  const toolbarRef = useRef<ConsoleToolbarHandle>(null);
   const searchParams = useSearchParams();
 
   useEffect(() => {
     setTriageMap(loadTriageState());
     setPins(loadPins());
+    if (!isOnboardingDone()) setShowOnboarding(true);
+  }, []);
+
+  const dismissOnboarding = useCallback(() => {
+    markOnboardingDone();
+    setShowOnboarding(false);
   }, []);
 
   const handleTriageChange = useCallback(
@@ -230,8 +241,9 @@ export default function OpsConsole() {
     [pushResponse]
   );
 
-  const runDigest = useCallback(async () => {
+  const runDigest = useCallback(async (): Promise<boolean> => {
     setError(null);
+    setDigestLoading(true);
     try {
       const res = await fetch("/api/digest");
       if (!res.ok) throw new Error("Digest request failed");
@@ -248,8 +260,12 @@ export default function OpsConsole() {
       };
       pushResponse("Morning ops digest", response);
       setQuery("Morning ops digest");
+      return true;
     } catch {
       setError("Digest failed — check connection and retry.");
+      return false;
+    } finally {
+      setDigestLoading(false);
     }
   }, [pushResponse]);
 
@@ -379,8 +395,24 @@ export default function OpsConsole() {
 
   const latest = history[0]?.response;
 
+  const topQueueId = filtered[0]?.id ?? null;
+
+  const selectTopQueueItem = useCallback(() => {
+    if (topQueueId) selectDeployment(topQueueId);
+  }, [topQueueId, selectDeployment]);
+
   return (
     <>
+      <ShiftOnboarding
+        open={showOnboarding}
+        topItemId={topQueueId}
+        digestLoading={digestLoading}
+        onSkip={dismissOnboarding}
+        onComplete={dismissOnboarding}
+        onRunDigest={runDigest}
+        onSelectTopItem={selectTopQueueItem}
+        onOpenHandoff={() => toolbarRef.current?.openHandoff()}
+      />
       <ShortcutsHelp open={showShortcuts} onClose={() => setShowShortcuts(false)} />
       <CommandPalette
         open={showPalette}
@@ -549,12 +581,14 @@ export default function OpsConsole() {
 
         <div className="flex min-h-0 min-w-0 flex-col">
           <ConsoleToolbar
+            ref={toolbarRef}
             ranked={ranked}
             triageMap={triageMap}
             history={history}
             shiftActions={SHIFT_ACTIONS}
             onRunDigest={() => void runDigest()}
             onRunBrief={(q) => void runBrief(q)}
+            onHandoffExport={showOnboarding ? dismissOnboarding : undefined}
           />
 
           <div className="min-h-0 flex-1 overflow-y-auto scroll-thin p-3 sm:p-4">

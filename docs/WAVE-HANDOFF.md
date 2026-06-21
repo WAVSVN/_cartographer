@@ -1,22 +1,20 @@
-# WAVE HANDOFF — read this first
+# WAVE HANDOFF
 
-| Field | Value |
-|-------|-------|
-| **active_role** | `DONE` |
-| **wave** | 4 |
-| **iteration** | 7 |
-| **branch** | `rebuild/v1` |
-| **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | `181bbd2` |
-| **deploy_url** | https://cartographer-wavsvns-projects.vercel.app |
-| **blockers** | none |
+| active_role | — |
+| wave | P9 (done) |
+| branch | `main` (post-merge) |
+| goal | First-run shift guide — digest → exception → handoff |
+| sha | (post-merge) |
+| pr | https://github.com/WAVSVN/_cartographer/pull/11 (merged) |
 
-## Current task
+## P9 — CONVERGED
 
-Wave 4 MCP CONVERGED. v1.1 PR #2 open: https://github.com/WAVSVN/_cartographer/pull/2
+Review: `docs/reviews/product-p9-REVIEW.md` · PR #11 merged to `main`.
 
-## Notes
+Delivered: `ShiftOnboarding` 3-step overlay, `lib/onboarding.ts` persistence, `ConsoleToolbar.openHandoff` ref, handoff export completes tour.
 
-- v1 PR #1 merged to `main` (2026-06-11)
-- Wave 4 MCP reviewed CONVERGED in `docs/reviews/iter-7-REVIEW.md`
-- Wave 4 landed in `bc5aafb`
+Build/test green at review. No open P9 blockers.
+
+## Next wave
+
+Per `docs/PITCH.md` — **P10 action audit log** (timestamped triage/runbook/brief actions, export with handoff).

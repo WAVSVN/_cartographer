@@ -9,7 +9,7 @@ type StripData = {
   nextDays: number | null;
 };
 
-export default function FleetHealthStrip() {
+export default function FleetKpis({ compact = false }: { compact?: boolean }) {
   const [data, setData] = useState<StripData | null>(null);
 
   useEffect(() => {
@@ -36,45 +36,46 @@ export default function FleetHealthStrip() {
 
   if (!data) {
     return (
-      <div className="border-b border-ops-line bg-ops-elevated/80 px-4 py-2" aria-hidden>
-        <div className="mx-auto flex max-w-7xl gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-4 w-24 animate-pulse rounded bg-ops-line/50" />
-          ))}
-        </div>
+      <div className={`flex gap-4 ${compact ? "" : "px-4 py-2"}`} aria-hidden>
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-3 w-16 animate-pulse rounded bg-ops-line/50" />
+        ))}
       </div>
     );
   }
 
   return (
     <div
-      className="border-b border-ops-line bg-ops-elevated/90 px-4 py-2"
+      className={`flex flex-wrap items-center gap-x-4 gap-y-0.5 text-[11px] sm:gap-x-5 sm:text-xs ${
+        compact ? "" : "border-b border-ops-line px-4 py-2"
+      }`}
       role="status"
       aria-label="Fleet health summary"
     >
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-1 font-mono text-xs">
-        <Kpi label="MW GAP" value={`${data.gapMw}`} warn={data.gapMw > 15} />
-        <Kpi label="EXCEPTIONS" value={String(data.exceptions)} warn={data.exceptions > 0} />
-        <Kpi
-          label="NEXT DEADLINE"
-          value={
-            data.nextDeadline
-              ? `${data.nextDeadline}${data.nextDays !== null ? ` · ${data.nextDays}d` : ""}`
-              : "—"
-          }
-          warn={data.nextDays !== null && data.nextDays <= 14}
-        />
-        <span className="ml-auto hidden text-ops-muted sm:inline">SYNTHETIC FLEET · LIVE</span>
-      </div>
+      <Kpi label="MW gap" value={`${data.gapMw}`} warn={data.gapMw > 15} />
+      <Kpi label="Exceptions" value={String(data.exceptions)} warn={data.exceptions > 0} />
+      <Kpi
+        label="Next"
+        value={
+          data.nextDeadline
+            ? `${data.nextDeadline}${data.nextDays !== null ? ` · ${data.nextDays}d` : ""}`
+            : "—"
+        }
+        warn={data.nextDays !== null && data.nextDays <= 14}
+      />
     </div>
   );
 }
 
 function Kpi({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
   return (
-    <span className="flex items-center gap-2">
+    <span className="flex items-center gap-1.5 whitespace-nowrap">
       <span className="text-ops-muted">{label}</span>
-      <span className={warn ? "text-ops-amber" : "text-ops-text"}>{value}</span>
+      <span
+        className={`font-mono tabular-nums ${warn ? "text-ops-critical" : "text-ops-text"}`}
+      >
+        {value}
+      </span>
     </span>
   );
 }

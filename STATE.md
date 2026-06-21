@@ -1,3 +1,3 @@
-# STATE
-
-phase: product P6 · active_role: BUILDER · branch: product/p6-incident-workspace
+# STATE
+
+phase: product P6 · active_role: DONE · branch: main (post-merge PR #8)

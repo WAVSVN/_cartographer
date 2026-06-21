@@ -3,6 +3,7 @@ import Link from "next/link";
 import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import Nav from "@/components/Nav";
 import FleetHealthStrip from "@/components/FleetHealthStrip";
+import ShiftClock from "@/components/ShiftClock";
 import "./globals.css";
 
 const sans = IBM_Plex_Sans({
@@ -55,9 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">
               <Nav />
-              <span className="rounded-ops border border-ops-line px-1.5 py-0.5 font-mono text-[10px] text-ops-muted">
-                demo
-              </span>
+              <ShiftClock />
             </div>
           </div>
           <FleetHealthStrip />

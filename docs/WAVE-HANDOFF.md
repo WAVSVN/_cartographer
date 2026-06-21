@@ -2,52 +2,40 @@
 
 | Field | Value |
 |-------|-------|
-| **phase** | `product` |
-| **active_role** | `BUILDER` |
-| **wave** | P3 |
+| **phase** | `product` — **DONE** |
+| **active_role** | `DONE` |
+| **wave** | P3 (complete) |
 | **iteration** | 1 |
-| **branch** | `product/p3-shift-handoff` (create from synced `main` after P2 merge) |
+| **branch** | `main` (post-merge) |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
-| **last_review** | P2 CONVERGED — `docs/reviews/product-p2-REVIEW.md` |
+| **last_review** | P3 CONVERGED — `docs/reviews/product-p3-REVIEW.md` |
 
-## BUILDER task — P3 shift handoff
+## Product phase complete
 
-See `docs/PRODUCT-ROADMAP.md` P3 deliverable.
+All product waves shipped and merged:
 
-### Implement
+| Wave | PR | Status |
+|------|-----|--------|
+| P1 Operator console | #3 | merged |
+| P2 Triage state | #4 | merged |
+| P3 Shift handoff | #5 | merged |
 
-1. `gt sync` on `main`; `gt create product/p3-shift-handoff -m "product(p3): shift notes + export handoff bundle"`
-2. **Shift notes** — operator-authored notes for the current shift (persist locally or session-scoped per spec)
-3. **Export handoff bundle** — exportable shift summary combining triage state, notes, and key deployment context for handoff lead
-4. UI in ops console toolbar or dedicated panel; operator labels, not interview copy
-5. Export format: markdown or JSON download (pick one; markdown preferred for paste into Slack/email)
+### P3 delivered
 
-### Verify + ship
-
-```powershell
-npm run build; npm test
-git commit -m "product(p3): shift notes + export handoff bundle"
-git push -u origin product/p3-shift-handoff
-gt submit --no-edit
-```
-
-### Handoff after BUILDER
-
-- `active_role` → `REVIEWER`
-- Note PR URL from `gt submit`
-
-## REVIEWER task (P2 — done)
-
-- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
-- PR #4 merged to `main`
+- `apps/web/lib/shift-handoff.ts` — notes persistence (`goc-shift-notes`), `buildMarkdown`, export helpers
+- `apps/web/components/ShiftHandoffPanel.tsx` — collapsible panel with timestamped notes + export button
+- Integrated into `OpsConsole` above Shift actions
+- Export markdown: fleet summary, open exceptions + triage, shift notes, session briefs / top risks
+- Tests: `apps/web/lib/shift-handoff.test.ts`
 
 ## Prior — P2 (merged)
 
 - Triage state: ack / investigating / escalated / cleared per deployment (`localStorage` + UI)
-- Commit `1777e70`
+- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
+- PR #4 merged to `main`
 
 ## Prior — P1 (merged)
 

@@ -26,6 +26,15 @@ Shift from interview demo → **day-to-day private-grid ops console**.
 | **P3** | `product/p3-shift-handoff` | Shift notes + export brief bundle for handoff |
 | **P4** | `product/p4-command-palette` | Ctrl+K palette, pinned deployments, filter polish, about copy |
 | **P5** | `product/p5-sla-urgency` | SLA urgency bands, overdue alert strip, queue refresh, pipeline filters, fleet drill-down |
+| **P6** | `product/p6-incident-workspace` | Runbook checklist, quick slip scenarios, copy deploy link |
+
+## P6 acceptance
+
+- [ ] `GET /api/scenario?deployment_id=&slip_weeks=` → `ScenarioResult` via `OpsContext.runInterconnectionSlip`
+- [ ] `lib/runbook-checks.ts` — per-deployment step checkmarks in `goc-runbook-checks`; tested
+- [ ] **DeploymentDetail** — checkable runbook steps; quick scenario chips (+2w / +4w); inline scenario result panel
+- [ ] **Copy link** button — copies `window.location.origin/?deploy=ID` (or with tranche)
+- [ ] `npm run build` + `npm test` green · `gt submit` → PR
 
 ## P5 acceptance
 

@@ -1,12 +1,28 @@
-import { useEffect, useState, type ReactNode } from "react";
-import type { Contract, Deployment, RiskRankedDeployment, Runbook } from "@cartographer/schemas";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
+import type {
+  Contract,
+  Deployment,
+  RiskRankedDeployment,
+  Runbook,
+  ScenarioResult,
+} from "@cartographer/schemas";
+import {
+  isStepChecked,
+  loadRunbookChecks,
+  saveRunbookChecks,
+  toggleStep,
+  type RunbookChecksMap,
+} from "@/lib/runbook-checks";
 import {
   TRIAGE_OPTIONS,
   type TriageRecord,
   type TriageState,
 } from "@/lib/triage-state";
+import ScenarioPanel from "./ScenarioPanel";
 import SlaCountdown from "./SlaCountdown";
 import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
+
+
 
 export type DeploymentDetailData = {
   deployment: Deployment;
@@ -14,6 +30,8 @@ export type DeploymentDetailData = {
   runbook: Runbook | null;
   risk: RiskRankedDeployment | null;
 };
+
+
 
 type Props = {
   data: DeploymentDetailData | null;
@@ -23,7 +41,19 @@ type Props = {
   triage?: TriageRecord | null;
   triageState?: TriageState;
   onTriageChange?: (update: { state: TriageState; note?: string }) => void;
+  trancheFilter?: string | null;
 };
+
+
+
+function buildDeployLink(deploymentId: string, tranche?: string | null): string {
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+  const params = new URLSearchParams({ deploy: deploymentId });
+  if (tranche) params.set("tranche", tranche);
+  return `${origin}/?${params.toString()}`;
+}
+
+
 
 export default function DeploymentDetail({
   data,
@@ -33,12 +63,94 @@ export default function DeploymentDetail({
   triage,
   triageState = "unacked",
   onTriageChange,
+  trancheFilter,
 }: Props) {
   const [noteDraft, setNoteDraft] = useState(triage?.note ?? "");
+  const [runbookChecks, setRunbookChecks] = useState<RunbookChecksMap>({});
+  const [scenario, setScenario] = useState<ScenarioResult | null>(null);
+  const [scenarioLoading, setScenarioLoading] = useState(false);
+  const [scenarioError, setScenarioError] = useState<string | null>(null);
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+
+
 
   useEffect(() => {
     setNoteDraft(triage?.note ?? "");
   }, [data?.deployment.id, triage?.note]);
+
+
+
+  useEffect(() => {
+    setRunbookChecks(loadRunbookChecks());
+  }, []);
+
+
+
+  useEffect(() => {
+    setScenario(null);
+    setScenarioError(null);
+  }, [data?.deployment.id]);
+
+
+
+  const handleRunbookToggle = useCallback(
+    (stepIndex: number, stepCount: number) => {
+      if (!data) return;
+      setRunbookChecks((prev) => {
+        const next = toggleStep(prev, data.deployment.id, stepIndex, stepCount);
+        saveRunbookChecks(next);
+        return next;
+      });
+    },
+    [data]
+  );
+
+
+
+  const runScenario = useCallback(
+    async (slipWeeks: number) => {
+      if (!data) return;
+      setScenarioLoading(true);
+      setScenarioError(null);
+      try {
+        const params = new URLSearchParams({
+          deployment_id: data.deployment.id,
+          slip_weeks: String(slipWeeks),
+        });
+        const res = await fetch(`/api/scenario?${params.toString()}`);
+        if (!res.ok) throw new Error("Scenario request failed");
+        const result = (await res.json()) as ScenarioResult;
+        setScenario(result);
+      } catch {
+        setScenarioError("Scenario failed — retry.");
+        setScenario(null);
+      } finally {
+        setScenarioLoading(false);
+      }
+    },
+    [data]
+  );
+
+
+
+  const copyDeployLink = useCallback(async () => {
+    if (!data) return;
+    const link = buildDeployLink(
+      data.deployment.id,
+      trancheFilter ?? data.deployment.gfa_tranche
+    );
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopyFeedback("Copied");
+      window.setTimeout(() => setCopyFeedback(null), 2000);
+    } catch {
+      setCopyFeedback("Copy failed");
+      window.setTimeout(() => setCopyFeedback(null), 2000);
+    }
+  }, [data, trancheFilter]);
+
+
+
   if (loading) {
     return (
       <Panel title="Deployment detail" className="mb-4">
@@ -49,6 +161,8 @@ export default function DeploymentDetail({
     );
   }
 
+
+
   if (!data) {
     return (
       <Panel title="Deployment detail" className="mb-4">
@@ -57,10 +171,14 @@ export default function DeploymentDetail({
     );
   }
 
+
+
   const { deployment: d, contract, runbook, risk } = data;
   const mwGap = d.mw_contracted - d.mw_available;
   const sla = contract?.uptime_sla_pct ?? risk?.sla_pct ?? null;
   const days = risk?.days_to_deadline ?? null;
+
+
 
   return (
     <Panel title="Deployment detail" className="mb-4">
@@ -73,17 +191,29 @@ export default function DeploymentDetail({
           <h2 className="mt-1 text-base font-semibold">{d.name}</h2>
           <p className="text-xs text-ops-muted">{d.site}</p>
         </div>
-        {onGenerateBrief && (
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={onGenerateBrief}
-            disabled={briefLoading}
-            className="ops-btn-primary shrink-0 text-xs"
+            onClick={() => void copyDeployLink()}
+            className="ops-btn-ghost text-xs"
+            aria-live="polite"
           >
-            {briefLoading ? "Generating…" : "Generate brief"}
+            {copyFeedback ?? "Copy link"}
           </button>
-        )}
+          {onGenerateBrief && (
+            <button
+              type="button"
+              onClick={onGenerateBrief}
+              disabled={briefLoading}
+              className="ops-btn-primary text-xs"
+            >
+              {briefLoading ? "Generating…" : "Generate brief"}
+            </button>
+          )}
+        </div>
       </div>
+
+
 
       {onTriageChange && (
         <div className="mb-4 rounded-ops border border-ops-line bg-ops-bg/50 px-3 py-2">
@@ -145,6 +275,8 @@ export default function DeploymentDetail({
         </div>
       )}
 
+
+
       <dl className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <Fact label="MW contracted" value={`${d.mw_contracted}`} />
         <Fact label="MW available" value={`${d.mw_available}`} warn={mwGap > 0} />
@@ -175,6 +307,8 @@ export default function DeploymentDetail({
         />
       </dl>
 
+
+
       {contract && (
         <div className="mb-4 rounded-ops border border-ops-line bg-ops-bg/50 px-3 py-2">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
@@ -191,6 +325,8 @@ export default function DeploymentDetail({
         </div>
       )}
 
+
+
       {d.exception_summary && (
         <div className="mb-4 rounded-ops border border-ops-critical/30 bg-ops-critical/5 px-3 py-2">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-critical">
@@ -202,6 +338,8 @@ export default function DeploymentDetail({
           <p className="mt-1 text-sm leading-snug">{d.exception_summary}</p>
         </div>
       )}
+
+
 
       {risk && (
         <div className="mb-4">
@@ -217,27 +355,70 @@ export default function DeploymentDetail({
         </div>
       )}
 
+
+
       {runbook && (
         <div>
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-            Runbook — {runbook.title}
-          </p>
-          <ol className="space-y-2">
-            {runbook.steps.map((step, i) => (
-              <li
-                key={i}
-                className="flex gap-2 rounded-ops border border-ops-line bg-ops-bg/40 px-3 py-2 text-sm leading-snug"
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
+              Runbook — {runbook.title}
+            </p>
+            <div className="flex gap-1" role="group" aria-label="Quick slip scenarios">
+              <button
+                type="button"
+                disabled={scenarioLoading}
+                onClick={() => void runScenario(2)}
+                className="rounded-ops border border-ops-line px-2 py-0.5 font-mono text-[10px] text-ops-muted transition hover:border-ops-amber/30 hover:text-ops-amber disabled:opacity-50"
               >
-                <span className="shrink-0 font-mono text-[10px] text-ops-amber">{i + 1}</span>
-                <span>{step}</span>
-              </li>
-            ))}
+                +2w
+              </button>
+              <button
+                type="button"
+                disabled={scenarioLoading}
+                onClick={() => void runScenario(4)}
+                className="rounded-ops border border-ops-line px-2 py-0.5 font-mono text-[10px] text-ops-muted transition hover:border-ops-amber/30 hover:text-ops-amber disabled:opacity-50"
+              >
+                +4w
+              </button>
+            </div>
+          </div>
+          <ol className="space-y-2">
+            {runbook.steps.map((step, i) => {
+              const checked = isStepChecked(runbookChecks, d.id, i);
+              return (
+                <li
+                  key={i}
+                  className={`flex gap-2 rounded-ops border px-3 py-2 text-sm leading-snug ${
+                    checked
+                      ? "border-ops-pass/30 bg-ops-pass/5 text-ops-muted"
+                      : "border-ops-line bg-ops-bg/40"
+                  }`}
+                >
+                  <label className="flex min-w-0 flex-1 cursor-pointer items-start gap-2">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => handleRunbookToggle(i, runbook.steps.length)}
+                      className="mt-0.5 shrink-0 accent-ops-amber"
+                    />
+                    <span className="shrink-0 font-mono text-[10px] text-ops-amber">{i + 1}</span>
+                    <span className={checked ? "line-through" : undefined}>{step}</span>
+                  </label>
+                </li>
+              );
+            })}
           </ol>
+          {scenarioError && (
+            <p className="mt-2 text-xs text-ops-critical">{scenarioError}</p>
+          )}
+          {scenario && <ScenarioPanel result={scenario} loading={scenarioLoading} />}
         </div>
       )}
     </Panel>
   );
 }
+
+
 
 function Fact({ label, value, warn }: { label: string; value: ReactNode; warn?: boolean }) {
   return (
@@ -247,3 +428,6 @@ function Fact({ label, value, warn }: { label: string; value: ReactNode; warn?: 
     </div>
   );
 }
+
+
+

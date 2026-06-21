@@ -4,32 +4,22 @@
 
 | Field | Value |
 |-------|-------|
-| **active_role** | `BUILDER` |
+| **active_role** | `REVIEWER` |
 | **wave** | 2 |
-| **iteration** | 1 |
+| **iteration** | 2 |
 | **branch** | `rebuild/v1` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | `1107c8c` wave(1) |
+| **last_commit** | `c45da6b` wave(2) |
 | **blockers** | none |
 
-## Current task (BUILDER)
+## Current task (REVIEWER)
 
-Implement **Wave 2** per `docs/REBUILD-SPEC.md`:
+Review **Wave 2** deliverable (`c45da6b`):
 
-1. Scaffold `apps/web` (Next.js 15, TypeScript, App Router).
-2. Wire workspace: root `package.json` → `"workspaces": ["packages/*", "apps/*"]`.
-3. Add `apps/web/lib/ops.ts` singleton (`loadFixtureBundle` + `OpsContext`).
-4. Implement API routes: `/api/deployments`, `/api/fleet`, `/api/pipeline`, `/api/digest`, `/api/brief`.
-5. Run `npm install`, `npm run build`, `npm test` from repo root.
-6. Commit: `wave(2): apps/web API routes — core parity`
-7. Push to `origin rebuild/v1`.
-8. Update `STATE.md` and this file:
-   - set `active_role` → `REVIEWER`
-   - set `wave` → 2 (review targets wave 2 deliverable)
-   - bump `iteration`
-   - set `last_commit` to new SHA
-
-## After BUILDER — spawn REVIEWER
+1. Read diff since `1107c8c` (wave 1) or review wave 2 commit.
+2. Write `docs/reviews/iter-2-REVIEW.md` with verdict `CONVERGED` or `BLOCKED`.
+3. Check: routes thin, Zod at boundaries if added, build/test green, API shape matches spec.
+4. Update this file per ORCHESTRATION.md (next BUILDER wave 3 or fixes if BLOCKED).
 
 Reviewer (fresh subagent, **readonly**):
 

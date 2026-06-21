@@ -2,13 +2,13 @@
 
 | Field | Value |
 |-------|-------|
-| phase | wave-1 complete → wave-2 queued |
+| phase | wave-2 complete → reviewer |
 | branch | rebuild/v1 |
-| iteration | 1 |
-| last_commit | wave(1): npm monorepo, schemas, data, core domain + vitest |
+| iteration | 2 |
+| last_commit | wave(2): apps/web API routes — core parity (`c45da6b`) |
 | open_pr | none |
 | blockers | none |
-| **handoff** | `docs/WAVE-HANDOFF.md` (active_role: BUILDER, wave 2) |
+| **handoff** | `docs/WAVE-HANDOFF.md` (active_role: REVIEWER, wave 2) |
 
 ## Acceptance (v1)
 
@@ -16,10 +16,10 @@
 - [x] Monorepo + strict TypeScript (npm workspaces; pnpm unavailable on host)
 - [x] Zod schemas at boundaries
 - [x] Core domain tests green (6 vitest)
-- [ ] API parity with grid-ops-brief
+- [x] API parity with grid-ops-brief (apps/web routes)
 - [ ] UI parity
 - [ ] Deployed to Vercel
 
 ## Next wave
 
-See **`docs/WAVE-HANDOFF.md`** — Wave 2 builder agent should run via `cartographer-loop` skill.
+See **`docs/WAVE-HANDOFF.md`** — Reviewer should verify wave 2, then BUILDER runs wave 3 (UI).

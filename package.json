@@ -1,9 +1,9 @@
 {
   "name": "cartographer",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": ["packages/*", "apps/*"],
   "scripts": {
-    "build": "npm run build -w @cartographer/schemas && npm run build -w @cartographer/data && npm run build -w @cartographer/core",
+    "build": "npm run build -w @cartographer/schemas && npm run build -w @cartographer/data && npm run build -w @cartographer/core && npm run build -w @cartographer/web",
     "test": "npm run test -w @cartographer/core",
     "typecheck": "npm run typecheck -ws --if-present"
   },

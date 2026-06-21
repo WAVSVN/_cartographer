@@ -6,7 +6,7 @@
 | wave | P7 |
 | branch | main |
 | goal | UI feels industrial, not AI slop |
-| sha | (post-merge) |
+| sha | 5ab064823c715b0b36aa73a126ed232596e96573 |
 | pr | https://github.com/WAVSVN/_cartographer/pull/9 |
 
 ## P7 — CONVERGED

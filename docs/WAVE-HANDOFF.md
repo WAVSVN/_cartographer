@@ -3,34 +3,28 @@
 | Field | Value |
 |-------|-------|
 | **phase** | `product` |
-| **active_role** | `DONE` |
-| **wave** | P4 (merged) |
-| **iteration** | 1 |
-| **branch** | `main` |
+| **active_role** | `BUILDER` |
+| **wave** | P5 |
+| **branch** | `product/p5-sla-urgency` |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
-| **pr** | https://github.com/WAVSVN/_cartographer/pull/6 (merged) |
-| **sha** | (post-merge main) |
-| **blockers** | none |
 
-## P4 — CONVERGED
+## BUILDER — P5 SLA urgency + drill-down
 
-Command palette, pinned watch list, filter reselect, mobile `?`, about copy. Review: `docs/reviews/product-p4-REVIEW.md`.
+See `docs/PRODUCT-ROADMAP.md` P5 acceptance.
 
-### Shipped
+1. `gt sync` on main → `gt create product/p5-sla-urgency`
+2. `lib/sla-urgency.ts` + tests
+3. `components/SlaCountdown.tsx` — use in OpsConsole, DeploymentDetail, PipelineView DaysCell
+4. `OverdueAlertStrip` — below FleetHealthStrip or in console; links to overdue filter
+5. OpsConsole: 5min silent refresh; support `?tranche=` search param to filter queue by gfa_tranche
+6. PipelineView: filter chips + sort by days_to_deadline asc
+7. FleetView: per tranche with stressed_count>0, link "View N" → `/?tranche=TRANCHE`
 
-- `lib/pins.ts` — `goc-pins` localStorage, pin/unpin/isPinned, sortWithPinsFirst
-- `lib/palette-search.ts` — deployment + shift-action search helper (tested)
-- `components/CommandPalette.tsx` — Ctrl/Cmd+K modal, Enter select, Esc close
-- OpsConsole — pin toggle on rows, pinned-first sort, filter-change reselect, mobile `?` button
-- `about/page.tsx` — operator product copy
+Ship: `product(p5): SLA urgency, overdue strip, auto-refresh, pipeline/fleet drill-down`
+`gt submit` → handoff REVIEWER
 
-## Prior (merged)
+## Prior merged
 
-P1 #3 · P2 #4 · P3 #5 · P4 #6 — see `docs/reviews/product-p*-REVIEW.md`
-
-## Optional follow-up
-
-- Redeploy production: https://cartographer-phi.vercel.app (Vercel auto-deploy on `main` push if configured)
-- Next product wave TBD in `docs/PRODUCT-ROADMAP.md`
+P1–P4 — `docs/reviews/product-p*-REVIEW.md`

@@ -2,42 +2,39 @@
 
 | Field | Value |
 |-------|-------|
-| **phase** | `product` — **DONE** |
-| **active_role** | `DONE` |
-| **wave** | P3 (complete) |
+| **phase** | `product` |
+| **active_role** | `BUILDER` |
+| **wave** | P4 |
 | **iteration** | 1 |
-| **branch** | `main` (post-merge) |
+| **branch** | `product/p4-command-palette` |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
 | **blockers** | none |
-| **last_review** | P3 CONVERGED — `docs/reviews/product-p3-REVIEW.md` |
 
-## Product phase complete
+## BUILDER task — P4 command palette + pins
 
-All product waves shipped and merged:
+See `docs/PRODUCT-ROADMAP.md` P4 acceptance.
 
-| Wave | PR | Status |
-|------|-----|--------|
-| P1 Operator console | #3 | merged |
-| P2 Triage state | #4 | merged |
-| P3 Shift handoff | #5 | merged |
+### Implement
 
-### P3 delivered
+1. `git checkout main; git pull; gt sync`
+2. `gt create product/p4-command-palette -m "product(p4): command palette + pins"`
+3. `lib/pins.ts` — load/save pinned deployment IDs (`goc-pins`)
+4. `components/CommandPalette.tsx` — Ctrl/Cmd+K modal, fuzzy search ranked list, actions (select deployment, shift actions)
+5. OpsConsole: pin toggle on queue rows; sort pinned first; wire palette; filter-change reselect; mobile `?` button
+6. `about/page.tsx` — operator-facing copy (console/triage/handoff, not interview demo)
 
-- `apps/web/lib/shift-handoff.ts` — notes persistence (`goc-shift-notes`), `buildMarkdown`, export helpers
-- `apps/web/components/ShiftHandoffPanel.tsx` — collapsible panel with timestamped notes + export button
-- Integrated into `OpsConsole` above Shift actions
-- Export markdown: fleet summary, open exceptions + triage, shift notes, session briefs / top risks
-- Tests: `apps/web/lib/shift-handoff.test.ts`
+### Ship
 
-## Prior — P2 (merged)
+```powershell
+npm run build; npm test
+git commit -m "product(p4): command palette, pinned watch list, UX polish"
+gt submit --no-edit
+```
 
-- Triage state: ack / investigating / escalated / cleared per deployment (`localStorage` + UI)
-- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
-- PR #4 merged to `main`
+Handoff → REVIEWER, note PR URL.
 
-## Prior — P1 (merged)
+## Prior (merged)
 
-- Review: `docs/reviews/product-p1-REVIEW.md` — **CONVERGED**
-- PR #3 merged to `main`
+P1 #3 · P2 #4 · P3 #5 — see `docs/reviews/product-p*-REVIEW.md`

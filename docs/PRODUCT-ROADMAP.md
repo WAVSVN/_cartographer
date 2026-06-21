@@ -24,6 +24,17 @@ Shift from interview demo → **day-to-day private-grid ops console**.
 | **P1** | `product/p1-operator-console` | Detail panel, inline runbook, shift toolbar, keyboard nav, explicit brief |
 | **P2** | `product/p2-triage-state` | Ack / investigating / escalated per deployment (localStorage + UI) |
 | **P3** | `product/p3-shift-handoff` | Shift notes + export brief bundle for handoff |
+| **P4** | `product/p4-command-palette` | Ctrl+K palette, pinned deployments, filter polish, about copy |
+
+## P4 acceptance
+
+- [ ] **Command palette** — `Ctrl+K` / `Cmd+K` overlay: search deployments by id/name/site, jump to select, run shift actions
+- [ ] **Pinned watch list** — pin icon on queue rows; `localStorage` `goc-pins`; pinned items stay at top
+- [ ] Filter change auto-selects first visible queue item
+- [ ] Mobile: shortcuts `?` button visible (not keyboard-only)
+- [ ] About page: operator product copy (no "playbook"/interview language)
+- [ ] `npm run build` + `npm test` green
+- [ ] `gt submit` → PR for review
 
 ## P1 acceptance
 

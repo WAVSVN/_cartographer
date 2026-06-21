@@ -1,0 +1,42 @@
+[
+  {
+    "customer_id": "CUST-018",
+    "customer": "Delaware Midstream Partners",
+    "term_years": 7,
+    "uptime_sla_pct": 99.5,
+    "bridge_to_permanent": true,
+    "notes": "Bridge must cover load until permanent 50 MW block energizes."
+  },
+  {
+    "customer_id": "CUST-044",
+    "customer": "Permian Data Hall LLC",
+    "term_years": 10,
+    "uptime_sla_pct": 99.9,
+    "bridge_to_permanent": true,
+    "notes": "Creditworthy counterparty; expansion option to 80 MW."
+  },
+  {
+    "customer_id": "CUST-007",
+    "customer": "Moser Legacy O&G",
+    "term_years": 8,
+    "uptime_sla_pct": 99.0,
+    "bridge_to_permanent": false,
+    "notes": "Consumption-based microgrid; hybrid gas/solar target."
+  },
+  {
+    "customer_id": "CUST-002",
+    "customer": "Atlas Sand Logistics (internal)",
+    "term_years": 5,
+    "uptime_sla_pct": 99.0,
+    "bridge_to_permanent": false,
+    "notes": "Supports Dune Express loadout and last-mile reliability."
+  },
+  {
+    "customer_id": "CUST-051",
+    "customer": "West Texas Desal Co-op",
+    "term_years": 9,
+    "uptime_sla_pct": 99.5,
+    "bridge_to_permanent": true,
+    "notes": "Phased commissioning schedule in contract exhibit B."
+  }
+]

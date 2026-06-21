@@ -14,7 +14,7 @@ import {
   saveShiftNotes,
   type ShiftNote,
 } from "@/lib/shift-handoff";
-import { Panel } from "./ui";
+import { Panel, SectionLabel } from "./ui";
 
 type Props = {
   ranked: RiskRankedDeployment[];
@@ -73,9 +73,7 @@ export default function ShiftHandoffPanel({ ranked, triageMap, history }: Props)
           className="flex items-center gap-2 text-left"
           aria-expanded={open}
         >
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
-            Shift handoff
-          </span>
+          <SectionLabel>Shift handoff</SectionLabel>
           <span className="font-mono text-[10px] text-ops-muted">{open ? "▲" : "▼"}</span>
         </button>
         <button
@@ -91,9 +89,9 @@ export default function ShiftHandoffPanel({ ranked, triageMap, history }: Props)
       {open && (
         <div className="space-y-3">
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
+            <SectionLabel as="label" className="block">
               Shift notes
-            </label>
+            </SectionLabel>
             <div className="mt-1 flex gap-2">
               <input
                 type="text"

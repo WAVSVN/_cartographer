@@ -42,17 +42,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </a>
         <header className="sticky top-0 z-40 border-b border-ops-line bg-ops-panel/95 backdrop-blur-md">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2.5">
-            <Link href="/" className="flex min-w-0 items-center gap-2.5">
-              <span
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-ops border border-ops-amber/50 bg-ops-amber/10 font-mono text-[10px] font-semibold text-ops-amber"
-                aria-hidden
-              >
-                GOC
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold tracking-tight">Grid Ops Command</p>
-                <p className="truncate text-[11px] text-ops-muted">Private grid NOC</p>
-              </div>
+            <Link href="/" className="min-w-0">
+              <p className="truncate text-sm font-semibold tracking-tight">Grid Ops Command</p>
+              <p className="truncate text-xs text-ops-muted">Private grid operations</p>
             </Link>
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">
               <Nav />

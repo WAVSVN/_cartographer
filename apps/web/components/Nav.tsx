@@ -23,8 +23,8 @@ export default function Nav() {
             aria-current={active ? "page" : undefined}
             className={`rounded-ops px-2 py-1 sm:px-2.5 sm:py-1 ${
               active
-                ? "bg-ops-amber/15 font-medium text-ops-amber"
-                : "text-ops-muted hover:text-ops-text"
+                ? "bg-ops-link/15 font-medium text-ops-link"
+                : "text-ops-muted hover:text-ops-link"
             }`}
           >
             {l.label}

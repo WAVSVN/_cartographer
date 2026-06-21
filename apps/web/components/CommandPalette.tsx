@@ -123,7 +123,7 @@ export default function CommandPalette({
       onClick={onClose}
     >
       <div
-        className="ops-panel w-full max-w-lg overflow-hidden shadow-panel"
+        className="ops-panel w-full max-w-lg overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-b border-ops-line p-3">

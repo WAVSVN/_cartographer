@@ -9,16 +9,11 @@
 
   body {
     @apply bg-ops-bg text-ops-text antialiased;
-    background-image:
-      linear-gradient(rgba(30, 42, 61, 0.35) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(30, 42, 61, 0.35) 1px, transparent 1px);
-    background-size: 48px 48px;
-    background-position: -1px -1px;
   }
 }
 
 ::selection {
-  @apply bg-ops-amber/30;
+  @apply bg-ops-link/30;
 }
 
 .scroll-thin::-webkit-scrollbar {
@@ -31,21 +26,21 @@
 
 @layer components {
   .ops-panel {
-    @apply rounded-ops border border-ops-line bg-ops-panel shadow-panel;
+    @apply rounded-ops border border-ops-line bg-ops-panel;
   }
 
   .ops-input {
     @apply rounded-ops border border-ops-line bg-ops-bg px-3 py-2 font-mono text-sm outline-none transition;
-    @apply focus:border-ops-amber/50 focus:ring-1 focus:ring-ops-amber/30;
+    @apply focus:border-ops-link/50 focus:ring-1 focus:ring-ops-link/25;
   }
 
   .ops-btn-primary {
-    @apply rounded-ops bg-ops-amber px-4 py-2 text-sm font-semibold text-ops-bg transition;
-    @apply hover:bg-ops-amber-dim disabled:opacity-40;
+    @apply rounded-ops border border-ops-link/40 bg-ops-link/15 px-4 py-2 text-sm font-medium text-ops-link transition;
+    @apply hover:border-ops-link/60 hover:bg-ops-link/25 disabled:opacity-40;
   }
 
   .ops-btn-ghost {
     @apply rounded-ops border border-ops-line px-3 py-1.5 text-xs text-ops-muted transition;
-    @apply hover:border-ops-amber/30 hover:text-ops-text;
+    @apply hover:border-ops-link/30 hover:text-ops-text;
   }
 }

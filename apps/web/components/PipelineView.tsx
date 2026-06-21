@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { PipelineItem } from "@/lib/types";
 import { isDueWithin14, isOverdue } from "@/lib/sla-urgency";
 import SlaCountdown from "./SlaCountdown";
-import { PageHeader, Panel, RiskBar, Skeleton, StatusBadge } from "./ui";
+import { PageHeader, Panel, RiskBar, SectionLabel, Skeleton, StatusBadge } from "./ui";
 
 type PipelineFilter = "all" | "overdue" | "due-14";
 
@@ -92,7 +92,7 @@ export default function PipelineView() {
       <Panel className="hidden overflow-x-auto md:block">
         <table className="w-full text-left text-sm" role="table">
           <thead>
-            <tr className="border-b border-ops-line text-[10px] uppercase tracking-wider text-ops-muted">
+            <tr className="border-b border-ops-line text-xs font-medium text-ops-muted">
               <th scope="col" className="p-2">
                 ID
               </th>
@@ -128,7 +128,7 @@ export default function PipelineView() {
                 <td className="p-2">
                   <Link
                     href={`/?deploy=${p.deployment.id}`}
-                    className="font-mono text-xs text-ops-amber hover:underline"
+                    className="font-mono text-xs text-ops-link hover:underline"
                   >
                     {p.deployment.id}
                   </Link>
@@ -165,7 +165,7 @@ function PipelineCard({ item: p }: { item: PipelineItem }) {
         <div>
           <div className="flex items-center gap-2">
             <StatusBadge status={p.deployment.status} />
-            <Link href={`/?deploy=${p.deployment.id}`} className="font-mono text-sm text-ops-amber">
+            <Link href={`/?deploy=${p.deployment.id}`} className="font-mono text-sm text-ops-link">
               {p.deployment.id}
             </Link>
           </div>

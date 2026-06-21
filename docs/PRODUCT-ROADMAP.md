@@ -27,6 +27,19 @@ Shift from interview demo → **day-to-day private-grid ops console**.
 | **P4** | `product/p4-command-palette` | Ctrl+K palette, pinned deployments, filter polish, about copy |
 | **P5** | `product/p5-sla-urgency` | SLA urgency bands, overdue alert strip, queue refresh, pipeline filters, fleet drill-down |
 | **P6** | `product/p6-incident-workspace` | Runbook checklist, quick slip scenarios, copy deploy link |
+| **P7** | `product/p7-anti-slop-ui` | Visual + copy pass — industrial, not AI dashboard |
+
+## P7 acceptance
+
+- [ ] `docs/DESIGN.md` principles applied across apps/web
+- [ ] Palette: remove body grid; amber = alarm only; add `ops-link` accent; flatter panels (no shadow-panel)
+- [ ] `SectionLabel` in ui.tsx replaces `uppercase tracking-widest` pattern app-wide
+- [ ] BriefCard: severity left-border; hide VALID when ok; "Next steps" / "Sources"; no badge cluster
+- [ ] FleetHealthStrip: sentence-case KPIs; drop "SYNTHETIC FLEET · LIVE" theater
+- [ ] OpsConsole: plain command input (no `>`); copy pass on loading/error strings
+- [ ] StatusBadge: readable labels or status dot, not EXC/WCH codes
+- [ ] Header simplified (less decorative GOC box)
+- [ ] `npm run build` + `npm test` green · `gt submit` → PR
 
 ## P6 acceptance
 

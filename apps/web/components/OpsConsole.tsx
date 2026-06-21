@@ -14,14 +14,22 @@ import {
   type TriageState,
   type TriageStateMap,
 } from "@/lib/triage-state";
+import {
+  isPinned,
+  loadPins,
+  savePins,
+  sortWithPinsFirst,
+  togglePin,
+} from "@/lib/pins";
 import BriefCard from "./BriefCard";
+import CommandPalette from "./CommandPalette";
 import DeploymentDetail, { type DeploymentDetailData } from "./DeploymentDetail";
 import ShiftHandoffPanel from "./ShiftHandoffPanel";
 import ShortcutsHelp from "./ShortcutsHelp";
 import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 const SHIFT_ACTIONS = [
-  { step: 1, label: "Morning digest", query: "Morning ops digest" },
+  { step: 1, label: "Morning digest", query: "Morning ops digest", digest: true },
   { step: 2, label: "Triage exception", query: "Deployment BRG-2047 is red — what happened?" },
   { step: 3, label: "SLA slip check", query: "If BRG-1102 slips 4 weeks, who breaches SLA?" },
 ];
@@ -65,6 +73,8 @@ export default function OpsConsole() {
   const [history, setHistory] = useState<Array<{ query: string; response: BriefResponse }>>([]);
   const [showTools, setShowTools] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showPalette, setShowPalette] = useState(false);
+  const [pins, setPins] = useState<string[]>([]);
   const [queueOpen, setQueueOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const booted = useRef(false);
@@ -74,6 +84,7 @@ export default function OpsConsole() {
 
   useEffect(() => {
     setTriageMap(loadTriageState());
+    setPins(loadPins());
   }, []);
 
   const handleTriageChange = useCallback(
@@ -90,8 +101,9 @@ export default function OpsConsole() {
   const filtered = useMemo(() => {
     const byStatus = filterRanked(ranked, filter);
     const byTriage = filterByTriage(byStatus, triageMap, filter === "my-triage" ? "my-triage" : "all");
-    return sortQueueByTriage(byTriage, triageMap, showCleared);
-  }, [ranked, filter, triageMap, showCleared]);
+    const sorted = sortQueueByTriage(byTriage, triageMap, showCleared);
+    return sortWithPinsFirst(sorted, pins);
+  }, [ranked, filter, triageMap, showCleared, pins]);
 
   const selectedTriageState = selectedId ? getTriageState(triageMap, selectedId) : "unacked";
   const selectedTriageRecord = selectedId ? triageMap[selectedId] ?? null : null;
@@ -193,6 +205,22 @@ export default function OpsConsole() {
     setQueueOpen(false);
   }, []);
 
+  const handlePinToggle = useCallback((deploymentId: string) => {
+    setPins((prev) => {
+      const next = togglePin(prev, deploymentId);
+      savePins(next);
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (filtered.length === 0) {
+      setSelectedId(null);
+      return;
+    }
+    selectDeployment(filtered[0].id);
+  }, [filter, showCleared]);
+
   useEffect(() => {
     if (booted.current) return;
     booted.current = true;
@@ -225,7 +253,18 @@ export default function OpsConsole() {
         target.tagName === "TEXTAREA" ||
         target.isContentEditable;
 
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setShowPalette(true);
+        return;
+      }
+
       if (e.key === "Escape") {
+        if (showPalette) {
+          e.preventDefault();
+          setShowPalette(false);
+          return;
+        }
         if (showShortcuts) {
           e.preventDefault();
           setShowShortcuts(false);
@@ -233,7 +272,7 @@ export default function OpsConsole() {
         return;
       }
 
-      if (showShortcuts) return;
+      if (showPalette || showShortcuts) return;
 
       if (e.key === "?" && !isInput) {
         e.preventDefault();
@@ -274,13 +313,22 @@ export default function OpsConsole() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [showShortcuts, detailFocused, moveSelection, generateBriefForSelected]);
+  }, [showPalette, showShortcuts, detailFocused, moveSelection, generateBriefForSelected]);
 
   const latest = history[0]?.response;
 
   return (
     <>
       <ShortcutsHelp open={showShortcuts} onClose={() => setShowShortcuts(false)} />
+      <CommandPalette
+        open={showPalette}
+        onClose={() => setShowPalette(false)}
+        deployments={ranked}
+        shiftActions={SHIFT_ACTIONS}
+        onSelectDeployment={selectDeployment}
+        onRunBrief={(q) => void runBrief(q)}
+        onRunDigest={() => void runDigest()}
+      />
 
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-[280px_1fr]">
         <div className="border-b border-ops-line p-3 lg:hidden">
@@ -357,28 +405,44 @@ export default function OpsConsole() {
                     TRIAGE_OPTIONS.find((o) => o.id === triageState)?.short ?? "NEW";
                   return (
                   <li key={d.id}>
-                    <button
-                      type="button"
-                      onClick={() => selectDeployment(d.id)}
-                      aria-label={`${d.id}, ${d.status}, risk score ${d.risk_score}, triage ${triageState}`}
-                      aria-current={selectedId === d.id ? "true" : undefined}
-                      className={`w-full rounded-ops border px-3 py-2 text-left transition ${
+                    <div
+                      className={`flex rounded-ops border transition ${
                         selectedId === d.id
                           ? "border-ops-amber/50 bg-ops-amber/5"
                           : "border-transparent hover:border-ops-line hover:bg-ops-elevated"
                       } ${triageState === "cleared" ? "opacity-60" : ""}`}
                     >
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="font-mono text-[10px] text-ops-muted">#{i + 1}</span>
-                          <StatusBadge status={d.status} />
-                          <TriageBadge state={triageState} short={triageShort} />
-                          <span className="font-mono text-xs text-ops-amber">{d.id}</span>
+                      <button
+                        type="button"
+                        aria-label={isPinned(pins, d.id) ? `Unpin ${d.id}` : `Pin ${d.id}`}
+                        aria-pressed={isPinned(pins, d.id)}
+                        onClick={() => handlePinToggle(d.id)}
+                        className={`shrink-0 self-start rounded-l-ops px-2 py-2 font-mono text-[10px] transition ${
+                          isPinned(pins, d.id)
+                            ? "text-ops-amber"
+                            : "text-ops-muted hover:text-ops-amber"
+                        }`}
+                      >
+                        {isPinned(pins, d.id) ? "★" : "☆"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => selectDeployment(d.id)}
+                        aria-label={`${d.id}, ${d.status}, risk score ${d.risk_score}, triage ${triageState}`}
+                        aria-current={selectedId === d.id ? "true" : undefined}
+                        className="min-w-0 flex-1 rounded-r-ops px-2 py-2 text-left"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[10px] text-ops-muted">#{i + 1}</span>
+                            <StatusBadge status={d.status} />
+                            <TriageBadge state={triageState} short={triageShort} />
+                            <span className="font-mono text-xs text-ops-amber">{d.id}</span>
+                          </div>
+                          <span className="font-mono text-xs tabular-nums text-ops-critical">
+                            {d.risk_score}
+                          </span>
                         </div>
-                        <span className="font-mono text-xs tabular-nums text-ops-critical">
-                          {d.risk_score}
-                        </span>
-                      </div>
                       <p className="mt-1 line-clamp-1 text-xs leading-snug">{d.name}</p>
                       <div className="mt-1.5">
                         <RiskBar score={d.risk_score} />
@@ -388,7 +452,8 @@ export default function OpsConsole() {
                         {d.days_to_deadline !== null &&
                           ` · ${d.days_to_deadline < 0 ? `${Math.abs(d.days_to_deadline)}d overdue` : `${d.days_to_deadline}d`}`}
                       </p>
-                    </button>
+                      </button>
+                    </div>
                   </li>
                   );
                 })
@@ -537,7 +602,7 @@ export default function OpsConsole() {
               <button
                 type="button"
                 onClick={() => setShowShortcuts(true)}
-                className="ops-btn-ghost hidden sm:inline-flex"
+                className="ops-btn-ghost inline-flex"
                 aria-label="Keyboard shortcuts"
               >
                 ?

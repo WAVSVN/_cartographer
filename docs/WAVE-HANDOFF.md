@@ -24,6 +24,7 @@ Shipped shift notes panel + export handoff bundle. See PR below.
 - Integrated into `OpsConsole` above Shift actions
 - Export markdown: fleet summary, open exceptions + triage, shift notes, session briefs / top risks
 - Tests: `apps/web/lib/shift-handoff.test.ts`
+- **PR:** https://github.com/WAVSVN/_cartographer/pull/5
 
 ## REVIEWER task — P3
 

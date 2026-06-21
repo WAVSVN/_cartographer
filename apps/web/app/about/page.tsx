@@ -44,19 +44,19 @@ export default function AboutPage() {
       <Panel title="Modules">
         <ul className="space-y-2 text-sm">
           <li>
-            <Link href="/" className="text-ops-amber hover:underline">
+            <Link href="/" className="text-ops-link hover:underline">
               Console
             </Link>{" "}
             — triage queue, detail, shift actions, handoff
           </li>
           <li>
-            <Link href="/fleet" className="text-ops-amber hover:underline">
+            <Link href="/fleet" className="text-ops-link hover:underline">
               Fleet
             </Link>{" "}
             — GFA tranche MW rollup
           </li>
           <li>
-            <Link href="/pipeline" className="text-ops-amber hover:underline">
+            <Link href="/pipeline" className="text-ops-link hover:underline">
               Pipeline
             </Link>{" "}
             — commissioning deadlines
@@ -79,7 +79,7 @@ export default function AboutPage() {
         </ul>
       </Panel>
 
-      <Link href="/" className="text-sm text-ops-amber hover:underline">
+      <Link href="/" className="text-sm text-ops-link hover:underline">
         ← Console
       </Link>
     </div>

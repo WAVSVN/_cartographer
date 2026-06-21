@@ -128,7 +128,7 @@ export default function PipelineView() {
                 <td className="p-2">
                   <Link
                     href={`/?deploy=${p.deployment.id}`}
-                    className="font-mono text-xs text-ops-amber hover:underline"
+                    className="font-mono text-xs text-ops-link hover:underline"
                   >
                     {p.deployment.id}
                   </Link>
@@ -165,7 +165,7 @@ function PipelineCard({ item: p }: { item: PipelineItem }) {
         <div>
           <div className="flex items-center gap-2">
             <StatusBadge status={p.deployment.status} />
-            <Link href={`/?deploy=${p.deployment.id}`} className="font-mono text-sm text-ops-amber">
+            <Link href={`/?deploy=${p.deployment.id}`} className="font-mono text-sm text-ops-link">
               {p.deployment.id}
             </Link>
           </div>

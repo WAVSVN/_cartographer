@@ -24,7 +24,7 @@ export default function ShortcutsHelp({ open, onClose }: Props) {
       onClick={onClose}
     >
       <div
-        className="ops-panel w-full max-w-md p-5 shadow-panel"
+        className="ops-panel w-full max-w-md p-5"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">

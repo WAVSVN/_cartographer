@@ -12,31 +12,28 @@ export default function AboutPage() {
       </header>
 
       <p className="text-sm leading-relaxed text-ops-text/90">
-        Operator-first console for risk-ranked deployments, per-shift triage state, inline
-        runbooks, and exportable handoff bundles. Synthetic fleet data; production-shaped
-        API and audit trail.
+        A <strong className="font-medium text-ops-text">shift workbench</strong> for private-grid
+        deployments: risk-ranked queue, inline runbooks, triage state, SLA slip scenarios, and
+        handoff export. Fixture fleet today; API and MCP match how you&apos;d wire CRM and telemetry.
       </p>
 
-      <Panel title="Console workflow">
+      <Panel title="What you do on shift">
         <ul className="space-y-2 text-sm">
           <li>
-            <strong className="text-ops-text">Risk queue</strong> — filter by status or your
-            triage; pin deployments to keep them at the top of the list.
+            <strong className="text-ops-text">Queue</strong> — pick the highest-risk site; detail and
+            runbook load without auto-brief.
           </li>
           <li>
-            <strong className="text-ops-text">Detail panel</strong> — contract, runbook, and
-            triage controls without auto-generating briefs.
+            <strong className="text-ops-text">Triage</strong> — ack, investigate, escalate; pin sites
+            you own.
           </li>
           <li>
-            <strong className="text-ops-text">Shift handoff</strong> — notes plus markdown
-            export for the next shift lead.
+            <strong className="text-ops-text">Scenario</strong> — +2w / +4w slip on a deployment; see
+            SLA impact inline.
           </li>
           <li>
-            <strong className="text-ops-text">Command palette</strong> —{" "}
-            <kbd className="rounded-ops border border-ops-line px-1 font-mono text-[10px]">
-              Ctrl+K
-            </kbd>{" "}
-            to jump to a deployment or run a shift action.
+            <strong className="text-ops-text">Handoff</strong> — toolbar export: fleet, exceptions,
+            notes, briefs → markdown for the next shift.
           </li>
         </ul>
       </Panel>
@@ -67,14 +64,14 @@ export default function AboutPage() {
       <Panel title="Keyboard">
         <ul className="list-disc space-y-1 pl-4 text-sm text-ops-muted">
           <li>
-            <kbd className="font-mono text-ops-amber">j</kbd> /{" "}
-            <kbd className="font-mono text-ops-amber">k</kbd> — move queue selection
+            <kbd className="font-mono text-ops-text">j</kbd> /{" "}
+            <kbd className="font-mono text-ops-text">k</kbd> — move queue selection
           </li>
           <li>
-            <kbd className="font-mono text-ops-amber">Ctrl+K</kbd> — command palette
+            <kbd className="font-mono text-ops-text">Ctrl+K</kbd> — command palette
           </li>
           <li>
-            <kbd className="font-mono text-ops-amber">?</kbd> — shortcuts overlay
+            <kbd className="font-mono text-ops-text">?</kbd> — shortcuts overlay
           </li>
         </ul>
       </Panel>

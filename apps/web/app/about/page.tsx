@@ -7,15 +7,39 @@ export default function AboutPage() {
       <header>
         <h1 className="text-lg font-semibold">Grid Ops Command</h1>
         <p className="mt-1 text-sm text-ops-muted">
-          Portfolio demo by Trevor Achtermann — not affiliated with Atlas Energy Solutions.
+          Private-grid shift console — triage, runbooks, handoff export.
         </p>
       </header>
 
       <p className="text-sm leading-relaxed text-ops-text/90">
-        Private-grid operations intelligence: fleet MW rollups, bridge-to-permanent pipeline,
-        risk-ranked queue, morning digest, and governed scenario briefs. Synthetic data; production-shaped
-        architecture.
+        Operator-first console for risk-ranked deployments, per-shift triage state, inline
+        runbooks, and exportable handoff bundles. Synthetic fleet data; production-shaped
+        API and audit trail.
       </p>
+
+      <Panel title="Console workflow">
+        <ul className="space-y-2 text-sm">
+          <li>
+            <strong className="text-ops-text">Risk queue</strong> — filter by status or your
+            triage; pin deployments to keep them at the top of the list.
+          </li>
+          <li>
+            <strong className="text-ops-text">Detail panel</strong> — contract, runbook, and
+            triage controls without auto-generating briefs.
+          </li>
+          <li>
+            <strong className="text-ops-text">Shift handoff</strong> — notes plus markdown
+            export for the next shift lead.
+          </li>
+          <li>
+            <strong className="text-ops-text">Command palette</strong> —{" "}
+            <kbd className="rounded-ops border border-ops-line px-1 font-mono text-[10px]">
+              Ctrl+K
+            </kbd>{" "}
+            to jump to a deployment or run a shift action.
+          </li>
+        </ul>
+      </Panel>
 
       <Panel title="Modules">
         <ul className="space-y-2 text-sm">
@@ -23,13 +47,13 @@ export default function AboutPage() {
             <Link href="/" className="text-ops-amber hover:underline">
               Console
             </Link>{" "}
-            — auto morning digest, playbook, risk queue
+            — triage queue, detail, shift actions, handoff
           </li>
           <li>
             <Link href="/fleet" className="text-ops-amber hover:underline">
               Fleet
             </Link>{" "}
-            — GFA tranche rollup
+            — GFA tranche MW rollup
           </li>
           <li>
             <Link href="/pipeline" className="text-ops-amber hover:underline">
@@ -40,21 +64,18 @@ export default function AboutPage() {
         </ul>
       </Panel>
 
-      <Panel title="60-second demo path">
-        <ol className="list-decimal space-y-1 pl-4 text-sm text-ops-muted">
-          <li>Open Console — morning digest loads automatically</li>
-          <li>Click BRG-2047 in risk queue</li>
-          <li>Run SLA slip scenario from playbook</li>
-          <li>Show Fleet GFA tranche rollup</li>
-        </ol>
-      </Panel>
-
-      <Panel title="Production integration">
+      <Panel title="Keyboard">
         <ul className="list-disc space-y-1 pl-4 text-sm text-ops-muted">
-          <li>SCADA / telemetry → MW and unit status</li>
-          <li>CRM → SLA and bridge-to-permanent contracts</li>
-          <li>Runbook CMS → operator playbooks</li>
-          <li>Entra ID + immutable audit log</li>
+          <li>
+            <kbd className="font-mono text-ops-amber">j</kbd> /{" "}
+            <kbd className="font-mono text-ops-amber">k</kbd> — move queue selection
+          </li>
+          <li>
+            <kbd className="font-mono text-ops-amber">Ctrl+K</kbd> — command palette
+          </li>
+          <li>
+            <kbd className="font-mono text-ops-amber">?</kbd> — shortcuts overlay
+          </li>
         </ul>
       </Panel>
 

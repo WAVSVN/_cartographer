@@ -2,11 +2,10 @@
 
 | Field | Value |
 |-------|-------|
-| phase | **product** — DONE (P1–P3) |
-| branch | `main` |
+| phase | product P4 (merged) |
+| branch | main |
 | active_role | DONE |
-| last_merged | P3 — PR #5 → `main` |
-| review | P3 CONVERGED — `docs/reviews/product-p3-REVIEW.md` |
-| deploy_url | https://cartographer-wavsvns-projects.vercel.app |
+| pr | https://github.com/WAVSVN/_cartographer/pull/6 (merged) |
+| deploy_url | https://cartographer-phi.vercel.app |
 
-Product phase complete. Operator console, triage state, and shift handoff export all shipped.
+P4 merged: command palette (Ctrl+K), pinned watch list, filter reselect, about copy. Review CONVERGED.

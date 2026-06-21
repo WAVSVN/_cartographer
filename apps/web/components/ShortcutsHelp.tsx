@@ -4,11 +4,12 @@ type Props = {
 };
 
 const BINDINGS = [
+  { keys: "Ctrl+K / ⌘K", action: "Open command palette" },
   { keys: "j / k", action: "Move selection in risk queue" },
   { keys: "Enter", action: "Focus detail panel, or generate brief when focused" },
   { keys: "/", action: "Focus command input" },
   { keys: "?", action: "Toggle this shortcuts overlay" },
-  { keys: "Escape", action: "Close shortcuts overlay" },
+  { keys: "Escape", action: "Close palette or shortcuts overlay" },
 ];
 
 export default function ShortcutsHelp({ open, onClose }: Props) {

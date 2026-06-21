@@ -2,42 +2,35 @@
 
 | Field | Value |
 |-------|-------|
-| **phase** | `product` — **DONE** |
+| **phase** | `product` |
 | **active_role** | `DONE` |
-| **wave** | P3 (complete) |
+| **wave** | P4 (merged) |
 | **iteration** | 1 |
-| **branch** | `main` (post-merge) |
+| **branch** | `main` |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
+| **pr** | https://github.com/WAVSVN/_cartographer/pull/6 (merged) |
+| **sha** | (post-merge main) |
 | **blockers** | none |
-| **last_review** | P3 CONVERGED — `docs/reviews/product-p3-REVIEW.md` |
 
-## Product phase complete
+## P4 — CONVERGED
 
-All product waves shipped and merged:
+Command palette, pinned watch list, filter reselect, mobile `?`, about copy. Review: `docs/reviews/product-p4-REVIEW.md`.
 
-| Wave | PR | Status |
-|------|-----|--------|
-| P1 Operator console | #3 | merged |
-| P2 Triage state | #4 | merged |
-| P3 Shift handoff | #5 | merged |
+### Shipped
 
-### P3 delivered
+- `lib/pins.ts` — `goc-pins` localStorage, pin/unpin/isPinned, sortWithPinsFirst
+- `lib/palette-search.ts` — deployment + shift-action search helper (tested)
+- `components/CommandPalette.tsx` — Ctrl/Cmd+K modal, Enter select, Esc close
+- OpsConsole — pin toggle on rows, pinned-first sort, filter-change reselect, mobile `?` button
+- `about/page.tsx` — operator product copy
 
-- `apps/web/lib/shift-handoff.ts` — notes persistence (`goc-shift-notes`), `buildMarkdown`, export helpers
-- `apps/web/components/ShiftHandoffPanel.tsx` — collapsible panel with timestamped notes + export button
-- Integrated into `OpsConsole` above Shift actions
-- Export markdown: fleet summary, open exceptions + triage, shift notes, session briefs / top risks
-- Tests: `apps/web/lib/shift-handoff.test.ts`
+## Prior (merged)
 
-## Prior — P2 (merged)
+P1 #3 · P2 #4 · P3 #5 · P4 #6 — see `docs/reviews/product-p*-REVIEW.md`
 
-- Triage state: ack / investigating / escalated / cleared per deployment (`localStorage` + UI)
-- Review: `docs/reviews/product-p2-REVIEW.md` — **CONVERGED**
-- PR #4 merged to `main`
+## Optional follow-up
 
-## Prior — P1 (merged)
-
-- Review: `docs/reviews/product-p1-REVIEW.md` — **CONVERGED**
-- PR #3 merged to `main`
+- Redeploy production: https://cartographer-phi.vercel.app (Vercel auto-deploy on `main` push if configured)
+- Next product wave TBD in `docs/PRODUCT-ROADMAP.md`

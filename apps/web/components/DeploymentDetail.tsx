@@ -1,5 +1,11 @@
+import { useEffect, useState } from "react";
 import type { Contract, Deployment, RiskRankedDeployment, Runbook } from "@cartographer/schemas";
-import { Panel, RiskBar, Skeleton, StatusBadge } from "./ui";
+import {
+  TRIAGE_OPTIONS,
+  type TriageRecord,
+  type TriageState,
+} from "@/lib/triage-state";
+import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 export type DeploymentDetailData = {
   deployment: Deployment;
@@ -13,6 +19,9 @@ type Props = {
   loading?: boolean;
   onGenerateBrief?: () => void;
   briefLoading?: boolean;
+  triage?: TriageRecord | null;
+  triageState?: TriageState;
+  onTriageChange?: (update: { state: TriageState; note?: string }) => void;
 };
 
 export default function DeploymentDetail({
@@ -20,7 +29,15 @@ export default function DeploymentDetail({
   loading,
   onGenerateBrief,
   briefLoading,
+  triage,
+  triageState = "unacked",
+  onTriageChange,
 }: Props) {
+  const [noteDraft, setNoteDraft] = useState(triage?.note ?? "");
+
+  useEffect(() => {
+    setNoteDraft(triage?.note ?? "");
+  }, [data?.deployment.id, triage?.note]);
   if (loading) {
     return (
       <Panel title="Deployment detail" className="mb-4">
@@ -66,6 +83,66 @@ export default function DeploymentDetail({
           </button>
         )}
       </div>
+
+      {onTriageChange && (
+        <div className="mb-4 rounded-ops border border-ops-line bg-ops-bg/50 px-3 py-2">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-ops-muted">
+              Triage
+            </p>
+            <TriageBadge
+              state={triageState}
+              short={TRIAGE_OPTIONS.find((o) => o.id === triageState)?.short ?? "NEW"}
+            />
+          </div>
+          <div className="flex flex-wrap gap-1" role="group" aria-label="Triage state">
+            {TRIAGE_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                aria-pressed={triageState === opt.id}
+                onClick={() =>
+                  onTriageChange({
+                    state: opt.id,
+                    note: noteDraft.trim() || undefined,
+                  })
+                }
+                className={`rounded-ops border px-2 py-0.5 font-mono text-[10px] transition ${
+                  triageState === opt.id
+                    ? "border-ops-amber/50 bg-ops-amber/10 text-ops-amber"
+                    : "border-ops-line text-ops-muted hover:border-ops-amber/30"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          <label className="mt-2 block">
+            <span className="sr-only">Triage note</span>
+            <input
+              type="text"
+              value={noteDraft}
+              onChange={(e) => setNoteDraft(e.target.value)}
+              onBlur={() => {
+                if (triageState !== "unacked" || noteDraft.trim()) {
+                  onTriageChange({
+                    state: triageState,
+                    note: noteDraft.trim() || undefined,
+                  });
+                }
+              }}
+              placeholder="Short note (optional)"
+              maxLength={120}
+              className="ops-input mt-1 w-full text-xs"
+            />
+          </label>
+          {triage?.updatedAt && (
+            <p className="mt-1 font-mono text-[10px] text-ops-muted">
+              Updated {new Date(triage.updatedAt).toLocaleString()}
+            </p>
+          )}
+        </div>
+      )}
 
       <dl className="mb-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
         <Fact label="MW contracted" value={`${d.mw_contracted}`} />

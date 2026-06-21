@@ -1,12 +1,23 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import type { BriefResponse, RiskRankedDeployment } from "@/lib/types";
+import {
+  filterByTriage,
+  getTriageState,
+  loadTriageState,
+  saveTriageState,
+  setTriageRecord,
+  sortQueueByTriage,
+  TRIAGE_OPTIONS,
+  type TriageState,
+  type TriageStateMap,
+} from "@/lib/triage-state";
 import BriefCard from "./BriefCard";
 import DeploymentDetail, { type DeploymentDetailData } from "./DeploymentDetail";
 import ShortcutsHelp from "./ShortcutsHelp";
-import { Panel, RiskBar, Skeleton, StatusBadge } from "./ui";
+import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 const SHIFT_ACTIONS = [
   { step: 1, label: "Morning digest", query: "Morning ops digest" },
@@ -14,13 +25,14 @@ const SHIFT_ACTIONS = [
   { step: 3, label: "SLA slip check", query: "If BRG-1102 slips 4 weeks, who breaches SLA?" },
 ];
 
-type QueueFilter = "all" | "exception" | "watch" | "overdue";
+type QueueFilter = "all" | "exception" | "watch" | "overdue" | "my-triage";
 
 const FILTERS: { id: QueueFilter; label: string }[] = [
   { id: "all", label: "All" },
   { id: "exception", label: "Exception" },
   { id: "watch", label: "Watch" },
   { id: "overdue", label: "Overdue" },
+  { id: "my-triage", label: "My triage" },
 ];
 
 function filterRanked(list: RiskRankedDeployment[], filter: QueueFilter) {
@@ -31,6 +43,8 @@ function filterRanked(list: RiskRankedDeployment[], filter: QueueFilter) {
       return list.filter((d) => d.status === "watch");
     case "overdue":
       return list.filter((d) => d.days_to_deadline !== null && d.days_to_deadline < 0);
+    case "my-triage":
+      return list;
     default:
       return list;
   }
@@ -43,6 +57,8 @@ export default function OpsConsole() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailFocused, setDetailFocused] = useState(false);
   const [filter, setFilter] = useState<QueueFilter>("all");
+  const [showCleared, setShowCleared] = useState(false);
+  const [triageMap, setTriageMap] = useState<TriageStateMap>({});
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<Array<{ query: string; response: BriefResponse }>>([]);
@@ -55,7 +71,29 @@ export default function OpsConsole() {
   const detailRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
 
-  const filtered = filterRanked(ranked, filter);
+  useEffect(() => {
+    setTriageMap(loadTriageState());
+  }, []);
+
+  const handleTriageChange = useCallback(
+    (deploymentId: string, update: { state: TriageState; note?: string }) => {
+      setTriageMap((prev) => {
+        const next = setTriageRecord(prev, deploymentId, update);
+        saveTriageState(next);
+        return next;
+      });
+    },
+    []
+  );
+
+  const filtered = useMemo(() => {
+    const byStatus = filterRanked(ranked, filter);
+    const byTriage = filterByTriage(byStatus, triageMap, filter === "my-triage" ? "my-triage" : "all");
+    return sortQueueByTriage(byTriage, triageMap, showCleared);
+  }, [ranked, filter, triageMap, showCleared]);
+
+  const selectedTriageState = selectedId ? getTriageState(triageMap, selectedId) : "unacked";
+  const selectedTriageRecord = selectedId ? triageMap[selectedId] ?? null : null;
 
   useEffect(() => {
     fetch("/api/deployments")
@@ -293,27 +331,47 @@ export default function OpsConsole() {
               ))}
             </div>
 
+            <div className="mb-2">
+              <button
+                type="button"
+                onClick={() => setShowCleared((s) => !s)}
+                aria-pressed={showCleared}
+                className={`rounded-ops border px-2 py-0.5 font-mono text-[10px] transition ${
+                  showCleared
+                    ? "border-ops-amber/50 bg-ops-amber/10 text-ops-amber"
+                    : "border-ops-line text-ops-muted hover:border-ops-amber/30"
+                }`}
+              >
+                Show cleared
+              </button>
+            </div>
+
             <ul className="space-y-1" role="list">
               {filtered.length === 0 ? (
                 <li className="px-2 py-3 text-xs text-ops-muted">No deployments match filter.</li>
               ) : (
-                filtered.map((d, i) => (
+                filtered.map((d, i) => {
+                  const triageState = getTriageState(triageMap, d.id);
+                  const triageShort =
+                    TRIAGE_OPTIONS.find((o) => o.id === triageState)?.short ?? "NEW";
+                  return (
                   <li key={d.id}>
                     <button
                       type="button"
                       onClick={() => selectDeployment(d.id)}
-                      aria-label={`${d.id}, ${d.status}, risk score ${d.risk_score}`}
+                      aria-label={`${d.id}, ${d.status}, risk score ${d.risk_score}, triage ${triageState}`}
                       aria-current={selectedId === d.id ? "true" : undefined}
                       className={`w-full rounded-ops border px-3 py-2 text-left transition ${
                         selectedId === d.id
                           ? "border-ops-amber/50 bg-ops-amber/5"
                           : "border-transparent hover:border-ops-line hover:bg-ops-elevated"
-                      }`}
+                      } ${triageState === "cleared" ? "opacity-60" : ""}`}
                     >
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono text-[10px] text-ops-muted">#{i + 1}</span>
                           <StatusBadge status={d.status} />
+                          <TriageBadge state={triageState} short={triageShort} />
                           <span className="font-mono text-xs text-ops-amber">{d.id}</span>
                         </div>
                         <span className="font-mono text-xs tabular-nums text-ops-critical">
@@ -331,7 +389,8 @@ export default function OpsConsole() {
                       </p>
                     </button>
                   </li>
-                ))
+                  );
+                })
               )}
             </ul>
           </div>
@@ -364,6 +423,13 @@ export default function OpsConsole() {
                 loading={detailLoading}
                 onGenerateBrief={generateBriefForSelected}
                 briefLoading={loading}
+                triage={selectedTriageRecord}
+                triageState={selectedTriageState}
+                onTriageChange={
+                  selectedId
+                    ? (update) => handleTriageChange(selectedId, update)
+                    : undefined
+                }
               />
             </div>
 

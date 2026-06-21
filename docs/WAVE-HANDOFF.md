@@ -2,26 +2,23 @@
 
 | Field | Value |
 |-------|-------|
-| **phase** | `product` |
-| **active_role** | `IDLE` |
-| **wave** | P5 ✓ merged |
-| **branch** | `main` |
+| **active_role** | `BUILDER` |
+| **wave** | P6 |
+| **branch** | `product/p6-incident-workspace` |
 | **trunk** | `main` |
-| **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **review_tool** | Graphite (`gt submit`) |
-| **pr** | https://github.com/WAVSVN/_cartographer/pull/7 (merged) |
-| **sha** | c8a414c + review fix |
 
-## P5 — CONVERGED
+## BUILDER — P6 incident workspace
 
-SLA urgency bands, `SlaCountdown`, overdue alert strip, 5min queue refresh, pipeline filters/sort, fleet tranche drill-down.
+See `docs/PRODUCT-ROADMAP.md` P6.
 
-Review: `docs/reviews/product-p5-REVIEW.md` — **CONVERGED**
+1. `gt sync` → `gt create product/p6-incident-workspace`
+2. API `GET /api/scenario` — query params deployment_id, slip_weeks (default 4)
+3. `lib/runbook-checks.ts` + tests
+4. DeploymentDetail: runbook checklist, +2w/+4w scenario chips, ScenarioResult inline panel, copy link
+5. Ship `product(p6): incident workspace — runbook checks, quick scenarios` + `gt submit`
 
-## Prior merged
+Handoff → REVIEWER
 
-P1–P5 — `docs/reviews/product-p*-REVIEW.md`
+## Prior
 
-## Next wave
-
-No P6 defined in `docs/PRODUCT-ROADMAP.md`. Pick next product slice or shift to infra/demo polish.
+P1–P5 merged

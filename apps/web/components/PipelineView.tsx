@@ -1,18 +1,52 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { PipelineItem } from "@/lib/types";
+import { isDueWithin14, isOverdue } from "@/lib/sla-urgency";
+import SlaCountdown from "./SlaCountdown";
 import { PageHeader, Panel, RiskBar, Skeleton, StatusBadge } from "./ui";
+
+type PipelineFilter = "all" | "overdue" | "due-14";
+
+const PIPELINE_FILTERS: { id: PipelineFilter; label: string }[] = [
+  { id: "all", label: "All" },
+  { id: "overdue", label: "Overdue" },
+  { id: "due-14", label: "Due ≤14d" },
+];
+
+function sortByDeadline(items: PipelineItem[]): PipelineItem[] {
+  return [...items].sort((a, b) => {
+    if (a.days_to_deadline === null && b.days_to_deadline === null) return 0;
+    if (a.days_to_deadline === null) return 1;
+    if (b.days_to_deadline === null) return -1;
+    return a.days_to_deadline - b.days_to_deadline;
+  });
+}
 
 export default function PipelineView() {
   const [items, setItems] = useState<PipelineItem[] | null>(null);
+  const [pipeFilter, setPipeFilter] = useState<PipelineFilter>("all");
 
   useEffect(() => {
     fetch("/api/pipeline")
       .then((r) => r.json())
       .then((d) => setItems(d.pipeline ?? []));
   }, []);
+
+  const displayed = useMemo(() => {
+    if (!items) return [];
+    let list = items;
+    switch (pipeFilter) {
+      case "overdue":
+        list = list.filter((p) => isOverdue(p.days_to_deadline));
+        break;
+      case "due-14":
+        list = list.filter((p) => isDueWithin14(p.days_to_deadline));
+        break;
+    }
+    return sortByDeadline(list);
+  }, [items, pipeFilter]);
 
   if (!items) {
     return (
@@ -27,11 +61,30 @@ export default function PipelineView() {
     <div className="mx-auto max-w-7xl space-y-5 p-4">
       <PageHeader
         title="Bridge → Permanent Pipeline"
-        subtitle={`${items.length} transitions tracked`}
+        subtitle={`${displayed.length} of ${items.length} transitions tracked`}
       />
 
+      <div className="flex flex-wrap gap-1" role="tablist" aria-label="Pipeline filters">
+        {PIPELINE_FILTERS.map((f) => (
+          <button
+            key={f.id}
+            type="button"
+            role="tab"
+            aria-selected={pipeFilter === f.id}
+            onClick={() => setPipeFilter(f.id)}
+            className={`rounded-ops border px-2 py-0.5 font-mono text-[10px] transition ${
+              pipeFilter === f.id
+                ? "border-ops-amber/50 bg-ops-amber/10 text-ops-amber"
+                : "border-ops-line text-ops-muted hover:border-ops-amber/30"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+
       <div className="space-y-2 md:hidden">
-        {items.map((p) => (
+        {displayed.map((p) => (
           <PipelineCard key={p.deployment.id} item={p} />
         ))}
       </div>
@@ -67,7 +120,7 @@ export default function PipelineView() {
             </tr>
           </thead>
           <tbody>
-            {items.map((p) => (
+            {displayed.map((p) => (
               <tr
                 key={p.deployment.id}
                 className="border-b border-ops-line/40 hover:bg-ops-elevated/50"
@@ -85,8 +138,8 @@ export default function PipelineView() {
                 <td className="p-2 font-mono text-[11px]">
                   {p.deployment.commissioning_deadline ?? "—"}
                 </td>
-                <td className="p-2 font-mono text-xs">
-                  <DaysCell days={p.days_to_deadline} />
+                <td className="p-2 text-xs">
+                  <SlaCountdown days={p.days_to_deadline} />
                 </td>
                 <td className="p-2 font-mono text-xs">{p.mw_gap} MW</td>
                 <td className="p-2 w-24">
@@ -127,7 +180,7 @@ function PipelineCard({ item: p }: { item: PipelineItem }) {
         </div>
         <div>
           <span className="text-ops-muted">Days </span>
-          <DaysCell days={p.days_to_deadline} />
+          <SlaCountdown days={p.days_to_deadline} />
         </div>
         <div>
           <span className="text-ops-muted">Gap </span>
@@ -139,13 +192,6 @@ function PipelineCard({ item: p }: { item: PipelineItem }) {
       </div>
     </div>
   );
-}
-
-function DaysCell({ days }: { days: number | null }) {
-  if (days === null) return <>—</>;
-  if (days < 0) return <span className="text-ops-critical">{Math.abs(days)}d overdue</span>;
-  if (days <= 14) return <span className="text-ops-critical">{days}d</span>;
-  return <>{days}d</>;
 }
 
 function FlagList({ flags }: { flags: string[] }) {

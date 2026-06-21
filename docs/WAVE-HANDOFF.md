@@ -3,34 +3,25 @@
 | Field | Value |
 |-------|-------|
 | **phase** | `product` |
-| **active_role** | `DONE` |
-| **wave** | P4 (merged) |
-| **iteration** | 1 |
+| **active_role** | `IDLE` |
+| **wave** | P5 ✓ merged |
 | **branch** | `main` |
 | **trunk** | `main` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
 | **review_tool** | Graphite (`gt submit`) |
-| **pr** | https://github.com/WAVSVN/_cartographer/pull/6 (merged) |
-| **sha** | (post-merge main) |
-| **blockers** | none |
+| **pr** | https://github.com/WAVSVN/_cartographer/pull/7 (merged) |
+| **sha** | c8a414c + review fix |
 
-## P4 — CONVERGED
+## P5 — CONVERGED
 
-Command palette, pinned watch list, filter reselect, mobile `?`, about copy. Review: `docs/reviews/product-p4-REVIEW.md`.
+SLA urgency bands, `SlaCountdown`, overdue alert strip, 5min queue refresh, pipeline filters/sort, fleet tranche drill-down.
 
-### Shipped
+Review: `docs/reviews/product-p5-REVIEW.md` — **CONVERGED**
 
-- `lib/pins.ts` — `goc-pins` localStorage, pin/unpin/isPinned, sortWithPinsFirst
-- `lib/palette-search.ts` — deployment + shift-action search helper (tested)
-- `components/CommandPalette.tsx` — Ctrl/Cmd+K modal, Enter select, Esc close
-- OpsConsole — pin toggle on rows, pinned-first sort, filter-change reselect, mobile `?` button
-- `about/page.tsx` — operator product copy
+## Prior merged
 
-## Prior (merged)
+P1–P5 — `docs/reviews/product-p*-REVIEW.md`
 
-P1 #3 · P2 #4 · P3 #5 · P4 #6 — see `docs/reviews/product-p*-REVIEW.md`
+## Next wave
 
-## Optional follow-up
-
-- Redeploy production: https://cartographer-phi.vercel.app (Vercel auto-deploy on `main` push if configured)
-- Next product wave TBD in `docs/PRODUCT-ROADMAP.md`
+No P6 defined in `docs/PRODUCT-ROADMAP.md`. Pick next product slice or shift to infra/demo polish.

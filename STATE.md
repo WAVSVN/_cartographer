@@ -2,10 +2,9 @@
 
 | Field | Value |
 |-------|-------|
-| phase | product P4 (merged) |
+| phase | product P5 merged |
+| active_role | IDLE |
 | branch | main |
-| active_role | DONE |
-| pr | https://github.com/WAVSVN/_cartographer/pull/6 (merged) |
+| pr | https://github.com/WAVSVN/_cartographer/pull/7 (merged) |
+| sha | post-merge main |
 | deploy_url | https://cartographer-phi.vercel.app |
-
-P4 merged: command palette (Ctrl+K), pinned watch list, filter reselect, about copy. Review CONVERGED.

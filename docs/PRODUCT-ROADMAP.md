@@ -25,6 +25,17 @@ Shift from interview demo → **day-to-day private-grid ops console**.
 | **P2** | `product/p2-triage-state` | Ack / investigating / escalated per deployment (localStorage + UI) |
 | **P3** | `product/p3-shift-handoff` | Shift notes + export brief bundle for handoff |
 | **P4** | `product/p4-command-palette` | Ctrl+K palette, pinned deployments, filter polish, about copy |
+| **P5** | `product/p5-sla-urgency` | SLA urgency bands, overdue alert strip, queue refresh, pipeline filters, fleet drill-down |
+
+## P5 acceptance
+
+- [ ] `lib/sla-urgency.ts` — bands: overdue / critical (≤7d) / warning (≤14d) / ok; tested
+- [ ] `SlaCountdown` component — shared urgency styling in console queue + detail + pipeline
+- [ ] **Overdue alert strip** in header area when overdue count > 0 — click applies Overdue filter
+- [ ] **Queue auto-refresh** every 5 min (silent refetch `/api/deployments`, preserve selection)
+- [ ] **Pipeline** — filter chips All | Overdue | Due ≤14d; default sort soonest deadline first
+- [ ] **Fleet** — stressed tranche rows link to console with exceptions list (`/?tranche=` query or exception links from `/api/deployments`)
+- [ ] `npm run build` + `npm test` green · `gt submit` → PR
 
 ## P4 acceptance
 

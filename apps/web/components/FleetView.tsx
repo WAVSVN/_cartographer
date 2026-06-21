@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { FleetSummary } from "@/lib/types";
 import { PageHeader, Panel, Skeleton } from "./ui";
@@ -133,7 +134,12 @@ export default function FleetView() {
                   <td className="py-2 font-mono text-xs text-ops-amber">{row.gap_mw.toFixed(1)}</td>
                   <td className="py-2">
                     {row.stressed_count > 0 ? (
-                      <span className="font-mono text-xs text-ops-critical">{row.stressed_count}</span>
+                      <Link
+                        href={`/?tranche=${encodeURIComponent(t)}`}
+                        className="font-mono text-xs text-ops-critical hover:underline"
+                      >
+                        View {row.stressed_count}
+                      </Link>
                     ) : (
                       <span className="font-mono text-xs text-ops-pass">0</span>
                     )}

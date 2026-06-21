@@ -24,4 +24,18 @@ Industrial control-room UI, not generic AI dashboard.
 - Steel-blue (`ops-link`) for navigation; amber/red for warn/alarm
 - Information density over decorative chrome
 
+## Workbench (P8+)
+
+Escape the **sidebar cards + stacked panels** dashboard pattern:
+
+- Full-bleed console (no `max-w-7xl` on ops view)
+- Queue = dense **table rows**, not bordered card list; no `RiskBar` per row
+- Work area = borderless detail (dividers only), not nested `ops-panel` stacks
+- Brief = bottom dock or collapsible strip, not another panel in the scroll stack
+- Shift handoff / actions → toolbar or palette, not two more panels above brief
+- System font stack (drop Google font pairing) unless one distinctive face is justified
+- Header = one row: title, nav, KPIs, clock — no backdrop-blur SaaS chrome
+- Filter = text segmented control, not mono pill chips
+- ID color = text primary, not accent amber
+
 Reference: `WAVSVN/components/no-slop/rules.json` → `ui_avoid_rules`

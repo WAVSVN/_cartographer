@@ -1,3 +1,3 @@
 # STATE
 
-phase: product P7 anti-slop UI · CONVERGED · active_role: DONE
+phase: product P8 workbench · active_role: BUILDER

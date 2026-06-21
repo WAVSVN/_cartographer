@@ -28,6 +28,19 @@ Shift from interview demo → **day-to-day private-grid ops console**.
 | **P5** | `product/p5-sla-urgency` | SLA urgency bands, overdue alert strip, queue refresh, pipeline filters, fleet drill-down |
 | **P6** | `product/p6-incident-workspace` | Runbook checklist, quick slip scenarios, copy deploy link |
 | **P7** | `product/p7-anti-slop-ui` | Visual + copy pass — industrial, not AI dashboard |
+| **P8** | `product/p8-workbench-layout` | Workbench layout — table queue, borderless detail, docked brief |
+
+## P8 acceptance
+
+- [ ] Console full-bleed; queue as dense table (pin, ID, status, risk, SLA) — no RiskBar in list
+- [ ] DeploymentDetail borderless (dividers, not Panel card)
+- [ ] Brief docks bottom or collapses; Shift handoff + Shift actions moved to toolbar/menu (not stacked panels)
+- [ ] Header single-row: merge FleetHealthStrip KPIs inline; remove backdrop-blur
+- [ ] System font stack (remove IBM Plex from layout) OR one utilitarian pairing
+- [ ] Filters: text segmented control, not amber pill chips
+- [ ] Nav: underline tabs, not bordered buttons
+- [ ] Palette more monochrome; amber only alarms; deployment IDs not amber-colored
+- [ ] `npm run build` + `npm test` green · PR via `gt submit` or `gh pr create`
 
 ## P7 acceptance
 

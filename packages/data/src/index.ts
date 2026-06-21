@@ -1,6 +1,3 @@
-import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   ContractsFileSchema,
   DeploymentsFileSchema,
@@ -9,23 +6,20 @@ import {
   type Deployment,
   type Runbook,
 } from "@cartographer/schemas";
-
-const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), "..", "fixtures");
-
-function loadJson(filename: string): unknown {
-  return JSON.parse(readFileSync(join(FIXTURES_DIR, filename), "utf-8"));
-}
+import contractsJson from "../fixtures/contracts.json" with { type: "json" };
+import deploymentsJson from "../fixtures/deployments.json" with { type: "json" };
+import runbooksJson from "../fixtures/runbooks.json" with { type: "json" };
 
 export function loadDeployments(): Deployment[] {
-  return DeploymentsFileSchema.parse(loadJson("deployments.json"));
+  return DeploymentsFileSchema.parse(deploymentsJson);
 }
 
 export function loadContracts(): Contract[] {
-  return ContractsFileSchema.parse(loadJson("contracts.json"));
+  return ContractsFileSchema.parse(contractsJson);
 }
 
 export function loadRunbooks(): Record<string, Runbook> {
-  return RunbooksFileSchema.parse(loadJson("runbooks.json"));
+  return RunbooksFileSchema.parse(runbooksJson);
 }
 
 export function loadFixtureBundle() {

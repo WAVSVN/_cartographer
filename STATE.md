@@ -2,12 +2,13 @@
 
 | Field | Value |
 |-------|-------|
-| phase | wave-1 complete |
+| phase | wave-1 complete → wave-2 queued |
 | branch | rebuild/v1 |
 | iteration | 1 |
 | last_commit | wave(1): npm monorepo, schemas, data, core domain + vitest |
 | open_pr | none |
 | blockers | none |
+| **handoff** | `docs/WAVE-HANDOFF.md` (active_role: BUILDER, wave 2) |
 
 ## Acceptance (v1)
 
@@ -21,4 +22,4 @@
 
 ## Next wave
 
-`apps/web` — thin Next.js API routes importing `@cartographer/core` + `@cartographer/data`.
+See **`docs/WAVE-HANDOFF.md`** — Wave 2 builder agent should run via `cartographer-loop` skill.

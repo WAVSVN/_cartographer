@@ -5,7 +5,7 @@
 | phase | wave-5 complete → PR_AGENT |
 | branch | rebuild/v1 |
 | iteration | 4 |
-| last_commit | 76f55a5 — wave(5): fix Vercel build |
+| last_commit | 3a90655 — wave(5): bundle fixtures for serverless |
 | deploy_url | https://cartographer-wavsvns-projects.vercel.app |
 | open_pr | none |
 | blockers | none |
@@ -22,14 +22,14 @@
 - [x] Deployed to Vercel — https://cartographer-wavsvns-projects.vercel.app
 - [ ] PR `rebuild/v1` → `main`
 
-## Deploy checklist (verified post-push)
+## Deploy checklist (verified live)
 
-- [ ] `/` — ops console
-- [ ] `/fleet`
-- [ ] `/pipeline`
-- [ ] `/about`
-- [ ] `GET /api/deployments`, `/api/fleet`, `/api/pipeline`, `/api/digest`
-- [ ] `POST /api/brief` with `{ "query": "..." }`
+- [x] `/` — ops console
+- [x] `/fleet`
+- [x] `/pipeline`
+- [x] `/about`
+- [x] `GET /api/deployments`, `/api/fleet`, `/api/pipeline`, `/api/digest`
+- [x] `POST /api/brief` with `{ "query": "..." }`
 
 ## Next
 

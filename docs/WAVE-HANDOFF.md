@@ -9,16 +9,16 @@
 | **iteration** | 4 |
 | **branch** | `rebuild/v1` |
 | **repo_path** | `c:\WAVSVN\components\_cartographer` |
-| **last_commit** | `76f55a5` |
+| **last_commit** | `3a90655` |
 | **deploy_url** | https://cartographer-wavsvns-projects.vercel.app |
 | **blockers** | none |
 
 ## Current task (PR_AGENT — open PR)
 
-Wave 5 deploy **complete**. Vercel project `cartographer` under WAVSVN; monorepo root `apps/web` + `vercel.json`.
+Wave 5 deploy **complete**. Vercel project `cartographer` under WAVSVN; monorepo root `apps/web` + Git on `rebuild/v1`.
 
 1. Open PR `rebuild/v1` → `main` with test plan + deploy URL above
-2. Include verification checklist: `/`, `/fleet`, `/pipeline`, `/about`, API routes
+2. Verification checklist (all 200): `/`, `/fleet`, `/pipeline`, `/about`, `GET /api/*`, `POST /api/brief`
 3. Write `CONVERGED.md` after PR is open
 
 **Deploy notes:** `docs/DEPLOY.md`

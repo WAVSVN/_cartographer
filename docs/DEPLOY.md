@@ -1,8 +1,8 @@
 # Deploy — Cartographer (`apps/web`)
 
-**Production:** https://cartographer-wavsvns-projects.vercel.app  
+**Production:** https://cartographer-phi.vercel.app (also `cartographer-wavsvns-projects.vercel.app`)  
 **Vercel project:** `wavsvns-projects/cartographer`  
-**Git branch:** `rebuild/v1`
+**Git branch:** `main` (production)
 
 ## Monorepo (npm workspaces)
 

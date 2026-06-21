@@ -1,8 +1,17 @@
-export default function Home() {
+import { Suspense } from "react";
+import OpsConsole from "@/components/OpsConsole";
+import { Skeleton } from "@/components/ui";
+
+export default function HomePage() {
   return (
-    <main>
-      <h1>Grid Ops Command</h1>
-      <p>API routes available at /api/deployments, /api/fleet, /api/pipeline, /api/digest, /api/brief.</p>
-    </main>
+    <Suspense
+      fallback={
+        <div className="p-4">
+          <Skeleton className="h-48 w-full" />
+        </div>
+      }
+    >
+      <OpsConsole />
+    </Suspense>
   );
 }

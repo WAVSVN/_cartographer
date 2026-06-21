@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { Contract, Deployment, RiskRankedDeployment, Runbook } from "@cartographer/schemas";
 import {
   TRIAGE_OPTIONS,
   type TriageRecord,
   type TriageState,
 } from "@/lib/triage-state";
+import SlaCountdown from "./SlaCountdown";
 import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 export type DeploymentDetailData = {
@@ -155,13 +156,20 @@ export default function DeploymentDetail({
         <Fact
           label="Deadline"
           value={
-            d.commissioning_deadline
-              ? days !== null && days < 0
-                ? `${d.commissioning_deadline} (${Math.abs(days)}d overdue)`
-                : days !== null
-                  ? `${d.commissioning_deadline} (${days}d)`
-                  : d.commissioning_deadline
-              : "—"
+            d.commissioning_deadline ? (
+              <span>
+                {d.commissioning_deadline}
+                {days !== null && (
+                  <>
+                    {" ("}
+                    <SlaCountdown days={days} />
+                    {")"}
+                  </>
+                )}
+              </span>
+            ) : (
+              "—"
+            )
           }
           warn={days !== null && days < 0}
         />
@@ -231,7 +239,7 @@ export default function DeploymentDetail({
   );
 }
 
-function Fact({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
+function Fact({ label, value, warn }: { label: string; value: ReactNode; warn?: boolean }) {
   return (
     <div className="rounded-ops border border-ops-line bg-ops-bg/40 px-2.5 py-1.5">
       <dt className="text-[10px] text-ops-muted">{label}</dt>

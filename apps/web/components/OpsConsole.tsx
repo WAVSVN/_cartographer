@@ -24,9 +24,13 @@ import {
 import BriefCard from "./BriefCard";
 import CommandPalette from "./CommandPalette";
 import DeploymentDetail, { type DeploymentDetailData } from "./DeploymentDetail";
+import OverdueAlertStrip from "./OverdueAlertStrip";
 import ShiftHandoffPanel from "./ShiftHandoffPanel";
 import ShortcutsHelp from "./ShortcutsHelp";
+import SlaCountdown from "./SlaCountdown";
 import { Panel, RiskBar, Skeleton, StatusBadge, TriageBadge } from "./ui";
+
+const REFRESH_MS = 5 * 60 * 1000;
 
 const SHIFT_ACTIONS = [
   { step: 1, label: "Morning digest", query: "Morning ops digest", digest: true },
@@ -98,25 +102,41 @@ export default function OpsConsole() {
     []
   );
 
+  const trancheFilter = searchParams.get("tranche");
+
   const filtered = useMemo(() => {
-    const byStatus = filterRanked(ranked, filter);
+    let list = ranked;
+    if (trancheFilter) {
+      list = list.filter((d) => d.gfa_tranche === trancheFilter);
+    }
+    const byStatus = filterRanked(list, filter);
     const byTriage = filterByTriage(byStatus, triageMap, filter === "my-triage" ? "my-triage" : "all");
     const sorted = sortQueueByTriage(byTriage, triageMap, showCleared);
     return sortWithPinsFirst(sorted, pins);
-  }, [ranked, filter, triageMap, showCleared, pins]);
+  }, [ranked, filter, triageMap, showCleared, pins, trancheFilter]);
 
   const selectedTriageState = selectedId ? getTriageState(triageMap, selectedId) : "unacked";
   const selectedTriageRecord = selectedId ? triageMap[selectedId] ?? null : null;
 
+  const initialRankedLoad = useRef(false);
+
   useEffect(() => {
-    fetch("/api/deployments")
-      .then((r) => r.json())
-      .then((data) => {
-        const list: RiskRankedDeployment[] = data.risk_ranked ?? [];
-        setRanked(list);
-        if (list[0]) setSelectedId(list[0].id);
-      });
-  }, []);
+    const loadRanked = () =>
+      fetch("/api/deployments")
+        .then((r) => r.json())
+        .then((data) => {
+          const list: RiskRankedDeployment[] = data.risk_ranked ?? [];
+          setRanked(list);
+          if (!initialRankedLoad.current) {
+            initialRankedLoad.current = true;
+            if (!searchParams.get("deploy") && list[0]) setSelectedId(list[0].id);
+          }
+        });
+
+    void loadRanked();
+    const id = window.setInterval(loadRanked, REFRESH_MS);
+    return () => window.clearInterval(id);
+  }, [searchParams]);
 
   const loadDetail = useCallback(async (id: string) => {
     setDetailLoading(true);
@@ -228,6 +248,9 @@ export default function OpsConsole() {
     if (dep?.match(/^(BRG|PRM)-\d{4}$/i)) {
       setSelectedId(dep.toUpperCase());
     }
+    if (searchParams.get("filter") === "overdue") {
+      setFilter("overdue");
+    }
   }, [searchParams]);
 
   const moveSelection = useCallback(
@@ -330,7 +353,14 @@ export default function OpsConsole() {
         onRunDigest={() => void runDigest()}
       />
 
+      <OverdueAlertStrip onOverdueClick={() => setFilter("overdue")} />
+
       <div className="mx-auto max-w-7xl lg:grid lg:grid-cols-[280px_1fr]">
+        {trancheFilter && (
+          <div className="col-span-full border-b border-ops-amber/30 bg-ops-amber/5 px-4 py-2 font-mono text-xs text-ops-amber lg:col-span-2">
+            GFA tranche {trancheFilter} — {filtered.length} in queue
+          </div>
+        )}
         <div className="border-b border-ops-line p-3 lg:hidden">
           <button
             type="button"
@@ -449,8 +479,12 @@ export default function OpsConsole() {
                       </div>
                       <p className="mt-1 font-mono text-[10px] text-ops-muted">
                         {d.mw_gap} MW gap
-                        {d.days_to_deadline !== null &&
-                          ` · ${d.days_to_deadline < 0 ? `${Math.abs(d.days_to_deadline)}d overdue` : `${d.days_to_deadline}d`}`}
+                        {d.days_to_deadline !== null && (
+                          <>
+                            {" · "}
+                            <SlaCountdown days={d.days_to_deadline} className="text-[10px]" />
+                          </>
+                        )}
                       </p>
                       </button>
                     </div>

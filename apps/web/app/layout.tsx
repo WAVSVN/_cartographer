@@ -1,52 +1,63 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { Fira_Code, Share_Tech_Mono } from "next/font/google";
+import AppKeyboardNav from "@/components/AppKeyboardNav";
+import BrandMark from "@/components/BrandMark";
 import Nav from "@/components/Nav";
 import FleetKpis from "@/components/FleetKpis";
 import ShiftClock from "@/components/ShiftClock";
 import "./globals.css";
 
+const fira = Fira_Code({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-ui",
+  display: "swap",
+});
+
+const shareTech = Share_Tech_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-brand",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
-  title: "Grid Ops Command — Private Grid Operations",
-  description:
-    "Fleet intelligence, bridge pipeline, risk-ranked ops queue, morning digest, and governed AI briefs for private-grid deployments.",
+  title: "grid ops command",
+  description: "Shift console for private-grid deployments — triage, runbooks, handoff.",
   openGraph: {
-    title: "Grid Ops Command",
-    description: "Private grid ops console — fleet, pipeline, scenarios, validated briefs.",
+    title: "grid ops command",
+    description: "Private grid shift console.",
     type: "website",
   },
+  themeColor: "#000000",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen font-sans">
+    <html lang="en" className={`${fira.variable} ${shareTech.variable}`}>
+      <body className="flex min-h-dvh flex-col overflow-hidden">
         <a
           href="#main"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-ops focus:bg-ops-link focus:px-3 focus:py-2 focus:text-ops-bg"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:border focus:border-ops-teal-hover focus:bg-black focus:px-3 focus:py-2 focus:text-ops-teal-hover"
         >
           Skip to content
         </a>
-        <header className="sticky top-0 z-40 border-b border-ops-line bg-ops-panel">
-          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2">
-            <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-6">
-              <Link href="/" className="min-w-0 shrink-0">
-                <p className="truncate text-sm font-semibold tracking-tight">Grid Ops Command</p>
-                <p className="truncate text-xs text-ops-muted">Private grid operations</p>
-              </Link>
-              <div className="hidden min-w-0 flex-1 sm:block">
-                <FleetKpis compact />
-              </div>
+        <AppKeyboardNav />
+        <header className="sticky top-0 z-40 shrink-0 border-b border-ops-line bg-ops-panel backdrop-blur-sm">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 px-3 py-1.5 sm:px-4">
+            <div className="flex min-w-0 flex-1 items-center gap-3 sm:gap-5">
+              <BrandMark />
+              <FleetKpis compact />
             </div>
             <div className="flex shrink-0 items-center gap-2 sm:gap-3">
               <Nav />
               <ShiftClock />
             </div>
           </div>
-          <div className="border-t border-ops-line sm:hidden">
-            <FleetKpis compact />
-          </div>
         </header>
-        <main id="main">{children}</main>
+        <main id="main" className="min-h-0 flex-1 overflow-hidden">
+          {children}
+        </main>
       </body>
     </html>
   );

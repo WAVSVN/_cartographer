@@ -13,6 +13,7 @@ import {
   toggleStep,
   type RunbookChecksMap,
 } from "@/lib/runbook-checks";
+import { riskClassName } from "@/lib/risk-display";
 import {
   TRIAGE_OPTIONS,
   type TriageRecord,
@@ -20,7 +21,7 @@ import {
 } from "@/lib/triage-state";
 import ScenarioPanel from "./ScenarioPanel";
 import SlaCountdown from "./SlaCountdown";
-import { RiskBar, SectionLabel, Skeleton, StatusBadge, TriageBadge } from "./ui";
+import { SectionLabel, Skeleton, StatusBadge, TriageBadge } from "./ui";
 
 export type DeploymentDetailData = {
   deployment: Deployment;
@@ -38,6 +39,8 @@ type Props = {
   triageState?: TriageState;
   onTriageChange?: (update: { state: TriageState; note?: string }) => void;
   trancheFilter?: string | null;
+  onRunbookCheck?: (stepIndex: number, checked: boolean) => void;
+  onScenarioRun?: (slipWeeks: number, result: ScenarioResult) => void;
 };
 
 function buildDeployLink(deploymentId: string, tranche?: string | null): string {
@@ -48,7 +51,7 @@ function buildDeployLink(deploymentId: string, tranche?: string | null): string 
 }
 
 function Section({ children, className = "" }: { children: ReactNode; className?: string }) {
-  return <section className={`border-b border-ops-line py-4 last:border-b-0 ${className}`}>{children}</section>;
+  return <section className={`border-b border-ops-line/60 py-2 last:border-b-0 ${className}`}>{children}</section>;
 }
 
 export default function DeploymentDetail({
@@ -60,6 +63,8 @@ export default function DeploymentDetail({
   triageState = "unacked",
   onTriageChange,
   trancheFilter,
+  onRunbookCheck,
+  onScenarioRun,
 }: Props) {
   const [noteDraft, setNoteDraft] = useState(triage?.note ?? "");
   const [runbookChecks, setRunbookChecks] = useState<RunbookChecksMap>({});
@@ -85,12 +90,14 @@ export default function DeploymentDetail({
     (stepIndex: number, stepCount: number) => {
       if (!data) return;
       setRunbookChecks((prev) => {
+        const wasChecked = isStepChecked(prev, data.deployment.id, stepIndex);
         const next = toggleStep(prev, data.deployment.id, stepIndex, stepCount);
         saveRunbookChecks(next);
+        onRunbookCheck?.(stepIndex, !wasChecked);
         return next;
       });
     },
-    [data]
+    [data, onRunbookCheck]
   );
 
   const runScenario = useCallback(
@@ -107,6 +114,7 @@ export default function DeploymentDetail({
         if (!res.ok) throw new Error("Scenario request failed");
         const result = (await res.json()) as ScenarioResult;
         setScenario(result);
+        onScenarioRun?.(slipWeeks, result);
       } catch {
         setScenarioError("Scenario failed — retry.");
         setScenario(null);
@@ -114,7 +122,7 @@ export default function DeploymentDetail({
         setScenarioLoading(false);
       }
     },
-    [data]
+    [data, onScenarioRun]
   );
 
   const copyDeployLink = useCallback(async () => {
@@ -145,7 +153,9 @@ export default function DeploymentDetail({
 
   if (!data) {
     return (
-      <p className="py-4 text-sm text-ops-muted">Select a deployment from the risk queue.</p>
+      <p className="py-4 text-sm text-ops-muted">
+        Select a site from the priority queue on the left.
+      </p>
     );
   }
 
@@ -158,31 +168,44 @@ export default function DeploymentDetail({
     <div>
       <Section>
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
               <StatusBadge status={d.status} />
-              <span className="font-mono text-xs text-ops-text">{d.id}</span>
+              <span className="font-mono text-xs">{d.id}</span>
+              {risk && (
+                <span className={`font-mono text-[10px] tabular-nums ${riskClassName(risk.risk_score)}`}>
+                  risk {risk.risk_score}
+                </span>
+              )}
             </div>
-            <h2 className="mt-1 text-base font-semibold">{d.name}</h2>
-            <p className="text-xs text-ops-muted">{d.site}</p>
+            <h2 className="mt-0.5 text-sm font-semibold">{d.name}</h2>
+            <p className="text-[11px] text-ops-muted">{d.site}</p>
+            {d.exception_summary && (
+              <p className="mt-1 text-xs leading-snug text-ops-critical">
+                {d.exception_code && (
+                  <span className="font-mono text-[10px]">{d.exception_code} · </span>
+                )}
+                {d.exception_summary}
+              </p>
+            )}
           </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5">
             <button
               type="button"
               onClick={() => void copyDeployLink()}
-              className="ops-btn-ghost text-xs"
+              className="ops-btn-ghost px-2 py-0.5 text-[10px]"
               aria-live="polite"
             >
-              {copyFeedback ?? "Copy link"}
+              {copyFeedback ?? "link"}
             </button>
             {onGenerateBrief && (
               <button
                 type="button"
                 onClick={onGenerateBrief}
                 disabled={briefLoading}
-                className="ops-btn-primary text-xs"
+                className="ops-btn-primary px-2 py-0.5 text-[10px]"
               >
-                {briefLoading ? "Loading brief…" : "Generate brief"}
+                {briefLoading ? "…" : "summary"}
               </button>
             )}
           </div>
@@ -191,7 +214,7 @@ export default function DeploymentDetail({
 
       {onTriageChange && (
         <Section>
-          <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="mb-1.5 flex items-center justify-between gap-2">
             <SectionLabel>Triage</SectionLabel>
             <TriageBadge
               state={triageState}
@@ -210,11 +233,7 @@ export default function DeploymentDetail({
                     note: noteDraft.trim() || undefined,
                   })
                 }
-                className={`-mb-px border-b-2 pb-1 text-xs transition ${
-                  triageState === opt.id
-                    ? "border-ops-link text-ops-text"
-                    : "border-transparent text-ops-muted hover:text-ops-text"
-                }`}
+                className={`ld-filter-tab ${triageState === opt.id ? "ld-filter-tab--active" : ""}`}
               >
                 {opt.label}
               </button>
@@ -234,27 +253,23 @@ export default function DeploymentDetail({
                   });
                 }
               }}
-              placeholder="Short note (optional)"
+              placeholder="Note (optional)"
               maxLength={120}
-              className="ops-input mt-1 w-full text-xs"
+              className="ops-input mt-1.5 w-full text-xs"
             />
           </label>
-          {triage?.updatedAt && (
-            <p className="mt-1 font-mono text-[10px] text-ops-muted">
-              Updated {new Date(triage.updatedAt).toLocaleString()}
-            </p>
-          )}
         </Section>
       )}
 
       <Section>
-        <dl className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[11px] sm:grid-cols-3 lg:grid-cols-4">
           <Fact label="MW contracted" value={`${d.mw_contracted}`} />
           <Fact label="MW available" value={`${d.mw_available}`} warn={mwGap > 0} />
           <Fact label="MW gap" value={`${mwGap}`} warn={mwGap > 0} />
           <Fact label="SLA" value={sla !== null ? `${sla}%` : "—"} />
+          {contract && <Fact label="Customer" value={contract.customer} />}
           <Fact label="Equipment" value={d.equipment} />
-          <Fact label="GFA tranche" value={d.gfa_tranche} />
+          <Fact label="GFA" value={d.gfa_tranche} title="Grid facility agreement tranche" />
           <Fact label="Type" value={d.type} />
           <Fact
             label="Deadline"
@@ -279,62 +294,28 @@ export default function DeploymentDetail({
         </dl>
       </Section>
 
-      {contract && (
-        <Section>
-          <SectionLabel className="block">Contract</SectionLabel>
-          <p className="mt-1 text-sm">{contract.customer}</p>
-          <p className="mt-0.5 font-mono text-[11px] text-ops-muted">
-            {contract.term_years}y · SLA {contract.uptime_sla_pct}%
-            {contract.bridge_to_permanent ? " · bridge→permanent" : ""}
-          </p>
-          {contract.notes && (
-            <p className="mt-1 text-xs text-ops-muted">{contract.notes}</p>
-          )}
-        </Section>
-      )}
-
-      {d.exception_summary && (
-        <Section>
-          <SectionLabel className="block text-ops-critical">Exception</SectionLabel>
-          {d.exception_code && (
-            <p className="mt-1 font-mono text-[11px] text-ops-critical">{d.exception_code}</p>
-          )}
-          <p className="mt-1 text-sm leading-snug">{d.exception_summary}</p>
-        </Section>
-      )}
-
-      {risk && (
-        <Section>
-          <div className="mb-1 flex items-center justify-between">
-            <SectionLabel>Risk score</SectionLabel>
-            <span className="font-mono text-xs tabular-nums text-ops-critical">
-              {risk.risk_score}
-            </span>
-          </div>
-          <RiskBar score={risk.risk_score} />
-        </Section>
-      )}
-
       {runbook && (
         <Section className="border-b-0">
-          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-            <SectionLabel>Runbook — {runbook.title}</SectionLabel>
-            <div className="flex gap-1" role="group" aria-label="Quick slip scenarios">
+          <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+            <SectionLabel>{runbook.title}</SectionLabel>
+            <div className="flex gap-1" role="group" aria-label="Model deadline slip">
               <button
                 type="button"
                 disabled={scenarioLoading}
                 onClick={() => void runScenario(2)}
                 className="ops-btn-ghost px-2 py-0.5 font-mono text-[10px]"
+                title="What if commissioning slips 2 weeks?"
               >
-                +2w
+                +2w slip
               </button>
               <button
                 type="button"
                 disabled={scenarioLoading}
                 onClick={() => void runScenario(4)}
                 className="ops-btn-ghost px-2 py-0.5 font-mono text-[10px]"
+                title="What if commissioning slips 4 weeks?"
               >
-                +4w
+                +4w slip
               </button>
             </div>
           </div>
@@ -344,7 +325,7 @@ export default function DeploymentDetail({
               return (
                 <li
                   key={i}
-                  className={`flex gap-2 border-b border-ops-line/40 px-1 py-2 text-sm leading-snug last:border-0 ${
+                  className={`flex gap-2 border-b border-ops-line/30 px-0.5 py-1 text-xs leading-snug last:border-0 ${
                     checked ? "text-ops-muted" : ""
                   }`}
                 >
@@ -353,7 +334,7 @@ export default function DeploymentDetail({
                       type="checkbox"
                       checked={checked}
                       onChange={() => handleRunbookToggle(i, runbook.steps.length)}
-                      className="mt-0.5 shrink-0 accent-ops-link"
+                      className="mt-0.5 shrink-0 accent-ops-teal"
                     />
                     <span className="shrink-0 font-mono text-[10px] text-ops-muted">{i + 1}</span>
                     <span className={checked ? "line-through" : undefined}>{step}</span>
@@ -372,10 +353,20 @@ export default function DeploymentDetail({
   );
 }
 
-function Fact({ label, value, warn }: { label: string; value: ReactNode; warn?: boolean }) {
+function Fact({
+  label,
+  value,
+  warn,
+  title,
+}: {
+  label: string;
+  value: ReactNode;
+  warn?: boolean;
+  title?: string;
+}) {
   return (
-    <div className="border-b border-ops-line/40 pb-1.5">
-      <dt className="text-[10px] text-ops-muted">{label}</dt>
+    <div className="border-b border-ops-line/30 pb-1" title={title}>
+      <dt className="text-[9px] uppercase tracking-wide text-ops-muted">{label}</dt>
       <dd className={`font-mono text-xs ${warn ? "text-ops-critical" : ""}`}>{value}</dd>
     </div>
   );

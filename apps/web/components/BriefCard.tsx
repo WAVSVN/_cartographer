@@ -8,7 +8,7 @@ function severityBorder(s: string) {
     case "high":
       return "border-l-ops-high";
     case "medium":
-      return "border-l-ops-amber";
+      return "border-l-ops-muted-bright";
     default:
       return "border-l-ops-pass";
   }
@@ -21,7 +21,7 @@ function severityText(s: string) {
     case "high":
       return "text-ops-high";
     case "medium":
-      return "text-ops-amber";
+      return "text-ops-muted-bright";
     default:
       return "text-ops-pass";
   }
@@ -36,7 +36,7 @@ export default function BriefCard({
   showTools?: boolean;
   title?: string;
 }) {
-  const { brief, validation, tools } = response;
+  const { brief, validation, tools, meta } = response;
 
   return (
     <article
@@ -44,7 +44,7 @@ export default function BriefCard({
       aria-live="polite"
       aria-label="Operations brief"
     >
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ops-line px-4 py-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-ops-line px-3 py-1.5">
         <div className="flex flex-wrap items-center gap-2">
           {title && <SectionLabel>{title}</SectionLabel>}
           <span className={`text-xs font-medium capitalize ${severityText(brief.severity)}`}>
@@ -55,14 +55,20 @@ export default function BriefCard({
               Invalid
             </span>
           )}
+          {meta && (
+            <span className="font-mono text-[10px] text-ops-muted">
+              {meta.mode}
+              {meta.intent ? ` · ${meta.intent}` : ""}
+            </span>
+          )}
         </div>
         <time className="font-mono text-[10px] text-ops-muted" dateTime={response.generated_at}>
           {new Date(response.generated_at).toLocaleString()}
         </time>
       </div>
 
-      <div className="space-y-4 p-4">
-        <p className="text-sm leading-relaxed text-ops-text/95">{brief.summary}</p>
+      <div className="space-y-2 p-3">
+        <p className="text-xs leading-relaxed text-ops-text/95">{brief.summary}</p>
 
         {brief.recommended_actions.length > 0 && (
           <div>
@@ -84,7 +90,7 @@ export default function BriefCard({
           <ul className="space-y-1 font-mono text-[11px]">
             {brief.citations.map((c, i) => (
               <li key={`${c.source}-${i}`} className="rounded-ops bg-ops-bg px-2 py-1">
-                {c.deployment_id && <span className="text-ops-link">{c.deployment_id} </span>}
+                {c.deployment_id && <span className="text-ops-teal-hover">{c.deployment_id} </span>}
                 {c.exception_code && <span>{c.exception_code} </span>}
                 <span className="text-ops-muted">← {c.source}</span>
               </li>
@@ -106,7 +112,7 @@ export default function BriefCard({
         {showTools && tools.length > 0 && (
           <details className="group">
             <summary className="cursor-pointer">
-              <SectionLabel>Tool trace ({tools.length})</SectionLabel>
+              <SectionLabel>How this answer was built ({tools.length})</SectionLabel>
             </summary>
             <pre className="mt-2 max-h-48 overflow-auto rounded-ops border border-ops-line bg-ops-bg p-3 font-mono text-[10px] text-ops-muted scroll-thin">
               {JSON.stringify(tools, null, 2)}

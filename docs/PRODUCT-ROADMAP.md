@@ -29,6 +29,15 @@ Shift from interview demo → **day-to-day private-grid ops console**.
 | **P6** | `product/p6-incident-workspace` | Runbook checklist, quick slip scenarios, copy deploy link |
 | **P7** | `product/p7-anti-slop-ui` | Visual + copy pass — industrial, not AI dashboard |
 | **P8** | `product/p8-workbench-layout` | Workbench layout — table queue, borderless detail, docked brief |
+| **P9** | `product/p9-shift-onboarding` | First-run shift guide — digest → exception → handoff |
+
+## P9 acceptance
+
+- [ ] `ShiftOnboarding` overlay on console first visit (`localStorage` `goc-onboarding-done`)
+- [ ] 3 steps with clear operator copy (not interview/demo tone)
+- [ ] Step actions wire to real UX: run digest, select top queue item, open handoff toolbar
+- [ ] Dismiss: "Skip" + complete on step 3; never blocks return visits
+- [ ] `npm run build` + `npm test` green · PR
 
 ## P8 acceptance
 

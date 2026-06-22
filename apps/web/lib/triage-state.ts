@@ -16,11 +16,11 @@ export type TriageStateMap = Record<string, TriageRecord>;
 export const TRIAGE_STORAGE_KEY = "goc-triage-state";
 
 export const TRIAGE_OPTIONS: { id: TriageState; label: string; short: string }[] = [
-  { id: "unacked", label: "Unacked", short: "NEW" },
+  { id: "unacked", label: "New", short: "NEW" },
   { id: "acknowledged", label: "Acknowledged", short: "ACK" },
   { id: "investigating", label: "Investigating", short: "INV" },
   { id: "escalated", label: "Escalated", short: "ESC" },
-  { id: "cleared", label: "Cleared", short: "CLR" },
+  { id: "cleared", label: "Resolved", short: "CLR" },
 ];
 
 const ACTIVE_TRIAGE: TriageState[] = ["acknowledged", "investigating", "escalated"];

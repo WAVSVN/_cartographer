@@ -68,14 +68,14 @@ export default function FleetView() {
   return (
     <div className="space-y-5 p-4">
       <PageHeader
-        title="Fleet & GFA"
-        subtitle={`${gapPct}% capacity gap across synthetic fleet`}
+        title="Fleet capacity"
+        subtitle={`${gapPct}% megawatt shortfall across demo fleet · GFA = grid facility agreement`}
       />
 
       <div className="grid gap-3 border-b border-ops-line pb-5 sm:grid-cols-3">
         <StatCard label="Contracted" value={`${fleet.total_contracted_mw}`} unit="MW" />
         <StatCard label="Available" value={`${fleet.total_available_mw}`} unit="MW" />
-        <StatCard label="Gap" value={`${fleet.total_gap_mw.toFixed(1)}`} unit="MW" accent />
+        <StatCard label="Shortfall" value={`${fleet.total_gap_mw.toFixed(1)}`} unit="MW" accent />
       </div>
 
       <div className="grid gap-6 border-b border-ops-line pb-5 lg:grid-cols-2">
@@ -111,7 +111,7 @@ export default function FleetView() {
 
       <div>
         <SectionLabel as="h2" className="mb-3 block">
-          GFA tranche rollup
+          By agreement tranche (GFA)
         </SectionLabel>
         <div className="overflow-x-auto scroll-thin">
           <table className="w-full text-left text-sm" role="table">
@@ -130,7 +130,7 @@ export default function FleetView() {
                   Gap
                 </th>
                 <th scope="col" className="pb-2">
-                  Stressed
+                  In trouble
                 </th>
               </tr>
             </thead>
@@ -140,7 +140,9 @@ export default function FleetView() {
                   <td className="py-2 font-mono text-xs text-ops-text">{t}</td>
                   <td className="py-2 font-mono text-xs">{row.contracted_mw}</td>
                   <td className="py-2 font-mono text-xs">{row.available_mw}</td>
-                  <td className="py-2 font-mono text-xs text-ops-critical">{row.gap_mw.toFixed(1)}</td>
+                  <td className={`py-2 font-mono text-xs ${row.gap_mw > 0 ? "text-ops-critical" : "text-ops-muted-bright"}`}>
+                    {row.gap_mw.toFixed(1)}
+                  </td>
                   <td className="py-2">
                     {row.stressed_count > 0 ? (
                       <Link

@@ -94,6 +94,29 @@ describe("shift-handoff", () => {
     expect(md).toContain("## Top risks");
   });
 
+  it("includes audit log in handoff markdown", () => {
+    const bundle = buildHandoffBundle({
+      ranked,
+      triageMap: {},
+      shiftNotes: [],
+      history: [],
+      fleet: null,
+      auditLog: [
+        {
+          id: "a1",
+          action: "triage_change",
+          at: "2026-06-21T10:00:00.000Z",
+          deployment_id: "BRG-2047",
+          detail: "investigating",
+        },
+      ],
+    });
+    const md = buildMarkdown(bundle);
+    expect(md).toContain("## Action audit log");
+    expect(md).toContain("investigating");
+    expect(md).toContain("BRG-2047");
+  });
+
   it("formats handoff filename", () => {
     expect(handoffFilename(new Date("2026-06-21T14:30:00.000Z"))).toBe(
       "shift-handoff-2026-06-21-1430.md"

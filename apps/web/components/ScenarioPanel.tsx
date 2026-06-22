@@ -17,23 +17,23 @@ export default function ScenarioPanel({ result, loading }: Props) {
       aria-busy={loading}
     >
       <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
-        <SectionLabel>Slip scenario — {result.slip_weeks}w</SectionLabel>
+        <SectionLabel>If deadline slips — {result.slip_weeks} weeks</SectionLabel>
         {result.sla_at_risk && (
-          <span className="font-mono text-[10px] text-ops-critical">SLA at risk</span>
+          <span className="font-mono text-[10px] text-ops-critical">Contract SLA at risk</span>
         )}
       </div>
       <p className="text-sm leading-snug">{result.summary}</p>
       <dl className="mt-2 grid gap-1 sm:grid-cols-3">
         <div>
-          <dt className="text-[10px] text-ops-muted">Original</dt>
+          <dt className="text-[10px] text-ops-muted">Original deadline</dt>
           <dd className="font-mono text-[11px]">{result.original_deadline ?? "—"}</dd>
         </div>
         <div>
-          <dt className="text-[10px] text-ops-muted">Adjusted</dt>
+          <dt className="text-[10px] text-ops-muted">After slip</dt>
           <dd className="font-mono text-[11px]">{result.adjusted_deadline ?? "—"}</dd>
         </div>
         <div>
-          <dt className="text-[10px] text-ops-muted">Affected MW</dt>
+          <dt className="text-[10px] text-ops-muted">MW affected</dt>
           <dd className="font-mono text-[11px]">{result.affected_mw}</dd>
         </div>
       </dl>

@@ -1,4 +1,5 @@
 import type { BriefResponse, FleetSummary, RiskRankedDeployment } from "@/lib/types";
+import type { AuditEntry } from "@/lib/audit-log";
 import {
   getTriageRecord,
   getTriageState,
@@ -41,6 +42,7 @@ export type ShiftHandoffBundle = {
   shiftNotes: ShiftNote[];
   briefs: ShiftBriefEntry[];
   topRisks: RiskRankedDeployment[];
+  auditLog: AuditEntry[];
 };
 
 export function loadShiftNotes(): ShiftNote[] {
@@ -227,6 +229,17 @@ export function buildMarkdown(bundle: ShiftHandoffBundle): string {
     lines.push("");
   }
 
+  if (bundle.auditLog.length > 0) {
+    lines.push("## Action audit log");
+    lines.push("");
+    for (const entry of bundle.auditLog.slice(0, 30)) {
+      const ts = new Date(entry.at).toLocaleString();
+      const dep = entry.deployment_id ? ` [${entry.deployment_id}]` : "";
+      lines.push(`- [${ts}] ${entry.action}${dep}: ${entry.detail}`);
+    }
+    lines.push("");
+  }
+
   return lines.join("\n").trimEnd() + "\n";
 }
 
@@ -262,6 +275,7 @@ export function buildHandoffBundle(input: {
   shiftNotes: ShiftNote[];
   history: Array<{ query: string; response: BriefResponse }>;
   fleet: FleetSummary | null;
+  auditLog?: AuditEntry[];
   exportedAt?: Date;
 }): ShiftHandoffBundle {
   const at = input.exportedAt ?? new Date();
@@ -275,5 +289,6 @@ export function buildHandoffBundle(input: {
     shiftNotes: input.shiftNotes,
     briefs,
     topRisks: briefs.length === 0 ? input.ranked.slice(0, 5) : [],
+    auditLog: input.auditLog ?? [],
   };
 }

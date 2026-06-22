@@ -31,6 +31,7 @@ describe("OpsContext", () => {
   it("deployment brief cites sources", () => {
     const result = ctx.generateBrief("Deployment BRG-2047 is red — what happened?");
     expect(result.validation.ok).toBe(true);
+    expect(result.meta?.intent).toBe("deployment_status");
     expect(result.brief.citations.some((c) => c.deployment_id === "BRG-2047")).toBe(true);
   });
 

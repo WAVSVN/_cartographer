@@ -10,7 +10,7 @@ export function SectionLabel({
   as?: "span" | "p" | "h2" | "h3" | "label";
 }) {
   return (
-    <Tag className={`text-xs font-medium text-ops-muted ${className}`}>{children}</Tag>
+    <Tag className={`lo-side-label block ${className}`}>{children}</Tag>
   );
 }
 
@@ -26,8 +26,8 @@ export function PageHeader({
   return (
     <header className="flex flex-wrap items-end justify-between gap-3">
       <div>
-        <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
-        {subtitle && <p className="mt-0.5 text-sm text-ops-muted">{subtitle}</p>}
+        <h1 className="text-lg font-medium lowercase tracking-tight">{title}</h1>
+        {subtitle && <p className="mt-0.5 text-sm text-ops-teal-dim">{subtitle}</p>}
       </div>
       {action}
     </header>
@@ -73,7 +73,7 @@ export function StatusBadge({ status }: { status: string }) {
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded border px-1.5 py-px text-[10px] font-medium ${cls}`}
+      className={`inline-flex items-center gap-1 border px-1.5 py-px text-[10px] font-medium lowercase ${cls}`}
       aria-label={`Status: ${status}`}
     >
       <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${dot}`} aria-hidden />
@@ -85,9 +85,9 @@ export function StatusBadge({ status }: { status: string }) {
 export function RiskBar({ score }: { score: number }) {
   const pct = Math.min(100, score);
   const color =
-    pct >= 70 ? "bg-ops-critical" : pct >= 50 ? "bg-ops-high" : "bg-ops-amber";
+    pct >= 70 ? "bg-ops-critical" : pct >= 50 ? "bg-ops-high" : "bg-ops-muted-bright";
   return (
-    <div className="h-1 w-full overflow-hidden rounded-full bg-ops-bg" aria-hidden>
+    <div className="h-px w-full overflow-hidden bg-ops-line" aria-hidden>
       <div className={`h-full ${color} transition-all`} style={{ width: `${pct}%` }} />
     </div>
   );
@@ -100,7 +100,7 @@ export function Skeleton({ className = "" }: { className?: string }) {
 const TRIAGE_BADGE: Record<string, string> = {
   unacked: "border-ops-line text-ops-muted",
   acknowledged: "border-ops-pass/40 bg-ops-pass/10 text-ops-pass",
-  investigating: "border-ops-amber/40 bg-ops-amber/10 text-ops-amber",
+  investigating: "border-ops-teal/40 bg-ops-teal/10 text-ops-teal-hover",
   escalated: "border-ops-critical/40 bg-ops-critical/10 text-ops-critical",
   cleared: "border-ops-line/60 bg-ops-bg text-ops-muted",
 };
@@ -115,7 +115,7 @@ export function TriageBadge({
   const cls = TRIAGE_BADGE[state] ?? TRIAGE_BADGE.unacked;
   return (
     <span
-      className={`rounded border px-1 py-px font-mono text-[10px] font-semibold ${cls}`}
+      className={`border px-1 py-px font-mono text-[10px] font-semibold lowercase ${cls}`}
       aria-label={`Triage: ${state}`}
     >
       {short}

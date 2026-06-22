@@ -6,12 +6,14 @@ export default function HomePage() {
   return (
     <Suspense
       fallback={
-        <div className="p-4">
-          <Skeleton className="h-48 w-full" />
+        <div className="flex h-full items-center justify-center p-4">
+          <Skeleton className="h-32 w-full max-w-md" />
         </div>
       }
     >
-      <OpsConsole />
+      <div className="h-full">
+        <OpsConsole />
+      </div>
     </Suspense>
   );
 }

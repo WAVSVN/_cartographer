@@ -1,5 +1,5 @@
 # STATE
 
-phase: product P8 workbench · status: CONVERGED · merged PR #10
+phase: product P9 shift onboarding · status: CONVERGED · merged PR #11
 active_role: —
-last_review: docs/reviews/product-p8-REVIEW.md
+last_review: docs/reviews/product-p9-REVIEW.md

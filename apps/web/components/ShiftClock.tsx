@@ -23,7 +23,7 @@ export default function ShiftClock() {
 
   return (
     <span
-      className="rounded-ops border border-ops-line px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-ops-muted"
+      className="border border-ops-line px-1.5 py-0.5 font-mono text-[10px] tabular-nums text-ops-teal-hover"
       aria-label={`Shift clock ${time}`}
     >
       {time || "—:—"}

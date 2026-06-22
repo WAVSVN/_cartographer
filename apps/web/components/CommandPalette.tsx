@@ -135,7 +135,7 @@ export default function CommandPalette({
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search deployments or actions…"
+            placeholder="Jump to a site or run a quick ask…"
             className="ops-input w-full"
             aria-label="Command palette search"
             autoComplete="off"
@@ -152,18 +152,18 @@ export default function CommandPalette({
                   onClick={() => runItem(item)}
                   onMouseEnter={() => setActiveIndex(i)}
                   className={`flex w-full flex-col gap-0.5 px-3 py-2 text-left transition ${
-                    i === activeIndex ? "bg-ops-amber/10" : "hover:bg-ops-elevated"
+                    i === activeIndex ? "bg-ops-teal/10" : "hover:bg-ops-elevated"
                   }`}
                 >
                   <span className="flex items-center gap-2 text-sm">
                     <span
                       className={`rounded-ops border px-1 font-mono text-[10px] ${
                         item.kind === "deployment"
-                          ? "border-ops-amber/40 text-ops-amber"
+                          ? "border-ops-teal/50 text-ops-teal-hover"
                           : "border-ops-line text-ops-muted"
                       }`}
                     >
-                      {item.kind === "deployment" ? "DEP" : "ACT"}
+                      {item.kind === "deployment" ? "site" : "ask"}
                     </span>
                     <span className="font-medium">{item.label}</span>
                   </span>

@@ -8,12 +8,36 @@
   }
 
   body {
-    @apply bg-ops-bg text-ops-text antialiased;
+    @apply bg-ops-bg font-mono text-base text-ops-text antialiased;
+    scrollbar-color: #333 #000;
+    scrollbar-width: thin;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.35;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.015) 2px,
+      rgba(255, 255, 255, 0.015) 4px
+    );
+  }
+
+  header,
+  main {
+    position: relative;
+    z-index: 1;
   }
 }
 
 ::selection {
-  @apply bg-ops-link/30;
+  @apply bg-ops-teal/30 text-ops-text;
 }
 
 .scroll-thin::-webkit-scrollbar {
@@ -21,26 +45,49 @@
   height: 5px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
-  @apply rounded bg-ops-line;
+  @apply bg-ops-tree-line;
 }
 
 @layer components {
+  .lo-side-label {
+    @apply mb-1 border-b border-ops-line pb-0.5 text-[0.62rem] lowercase tracking-widest text-ops-muted-bright;
+  }
+
+  .ld-backslash::before {
+    content: "\\ ";
+    @apply text-ops-teal-dim;
+  }
+
   .ops-panel {
-    @apply rounded-ops border border-ops-line bg-ops-panel;
+    @apply border border-ops-line bg-black/45;
   }
 
   .ops-input {
-    @apply rounded-ops border border-ops-line bg-ops-bg px-3 py-2 font-mono text-sm outline-none transition;
-    @apply focus:border-ops-link/50 focus:ring-1 focus:ring-ops-link/25;
+    @apply border border-ops-line bg-black/60 px-3 py-2 font-mono text-sm text-ops-chrome outline-none transition;
+    @apply focus:border-ops-teal-hover focus:text-ops-teal-hover;
   }
 
   .ops-btn-primary {
-    @apply rounded-ops border border-ops-link/40 bg-ops-link/15 px-4 py-2 text-sm font-medium text-ops-link transition;
-    @apply hover:border-ops-link/60 hover:bg-ops-link/25 disabled:opacity-40;
+    @apply border border-ops-line-hover bg-black/45 px-4 py-2 text-sm lowercase tracking-wide text-ops-teal-hover transition;
+    @apply hover:border-ops-accent/50 hover:bg-ops-accent/5 hover:text-ops-accent disabled:opacity-40;
   }
 
   .ops-btn-ghost {
-    @apply rounded-ops border border-ops-line px-3 py-1.5 text-xs text-ops-muted transition;
-    @apply hover:border-ops-link/30 hover:text-ops-text;
+    @apply border border-ops-line bg-black/45 px-3 py-1.5 text-xs lowercase tracking-wide text-ops-teal-dim transition;
+    @apply hover:border-ops-green/40 hover:text-ops-green;
+  }
+
+  .ld-tree-row::before {
+    content: "";
+    @apply absolute left-0 top-[1.05em] h-px w-2.5 bg-ops-tree-line;
+  }
+
+  .ld-filter-tab {
+    @apply -mb-px border-b-2 border-transparent pb-1.5 text-xs text-ops-chrome transition;
+    @apply hover:border-ops-green/40 hover:text-ops-green;
+  }
+
+  .ld-filter-tab--active {
+    @apply border-ops-accent text-ops-accent;
   }
 }

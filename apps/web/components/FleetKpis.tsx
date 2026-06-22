@@ -52,10 +52,11 @@ export default function FleetKpis({ compact = false }: { compact?: boolean }) {
       role="status"
       aria-label="Fleet health summary"
     >
-      <Kpi label="MW gap" value={`${data.gapMw}`} warn={data.gapMw > 15} />
-      <Kpi label="Exceptions" value={String(data.exceptions)} warn={data.exceptions > 0} />
+      <Kpi label="Gap" title="Fleet capacity shortfall (MW)" value={`${data.gapMw}`} warn={data.gapMw > 15} />
+      <Kpi label="Issues" title="Open exceptions" value={String(data.exceptions)} warn={data.exceptions > 0} />
       <Kpi
         label="Next"
+        title="Next commissioning deadline"
         value={
           data.nextDeadline
             ? `${data.nextDeadline}${data.nextDays !== null ? ` · ${data.nextDays}d` : ""}`
@@ -67,10 +68,20 @@ export default function FleetKpis({ compact = false }: { compact?: boolean }) {
   );
 }
 
-function Kpi({ label, value, warn }: { label: string; value: string; warn?: boolean }) {
+function Kpi({
+  label,
+  value,
+  warn,
+  title,
+}: {
+  label: string;
+  value: string;
+  warn?: boolean;
+  title?: string;
+}) {
   return (
-    <span className="flex items-center gap-1.5 whitespace-nowrap">
-      <span className="text-ops-muted">{label}</span>
+    <span className="flex items-center gap-1 whitespace-nowrap" title={title}>
+      <span className="text-ops-teal-dim">{label}</span>
       <span
         className={`font-mono tabular-nums ${warn ? "text-ops-critical" : "text-ops-text"}`}
       >

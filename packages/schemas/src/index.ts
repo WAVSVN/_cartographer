@@ -55,11 +55,19 @@ export const ToolLogEntrySchema = z.object({
   result: z.unknown(),
 });
 
+export const BriefMetaSchema = z.object({
+  mode: z.enum(["planner", "llm", "llm_fallback"]),
+  intent: z.string(),
+  confidence: z.number().min(0).max(1),
+  llm_model: z.string().optional(),
+});
+
 export const BriefResponseSchema = z.object({
   brief: BriefSchema,
   validation: z.object({ ok: z.boolean(), errors: z.array(z.string()) }),
   tools: z.array(ToolLogEntrySchema),
   generated_at: z.string().datetime(),
+  meta: BriefMetaSchema.optional(),
 });
 
 export const MwBucketSchema = z.object({
@@ -127,6 +135,7 @@ export type Runbook = z.infer<typeof RunbookSchema>;
 export type Citation = z.infer<typeof CitationSchema>;
 export type Brief = z.infer<typeof BriefSchema>;
 export type BriefResponse = z.infer<typeof BriefResponseSchema>;
+export type BriefMeta = z.infer<typeof BriefMetaSchema>;
 export type ToolLogEntry = z.infer<typeof ToolLogEntrySchema>;
 export type MwBucket = z.infer<typeof MwBucketSchema>;
 export type FleetSummary = z.infer<typeof FleetSummarySchema>;
@@ -142,4 +151,10 @@ export const RunbooksFileSchema = z.record(RunbookSchema);
 
 export const BriefQuerySchema = z.object({
   query: z.string().min(1).max(2000),
+  context: z
+    .object({
+      selected_deployment_id: z.string().optional(),
+    })
+    .optional(),
+  mode: z.enum(["auto", "planner", "llm"]).optional(),
 });

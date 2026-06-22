@@ -4,12 +4,15 @@ type Props = {
 };
 
 const BINDINGS = [
-  { keys: "Ctrl+K / ⌘K", action: "Open command palette" },
-  { keys: "j / k", action: "Move selection in risk queue" },
-  { keys: "Enter", action: "Focus detail panel, or generate brief when focused" },
-  { keys: "/", action: "Focus command input" },
-  { keys: "?", action: "Toggle this shortcuts overlay" },
-  { keys: "Escape", action: "Close palette or shortcuts overlay" },
+  { keys: "↑ / ↓", action: "Move selection in priority queue" },
+  { keys: "j / k", action: "Same — down / up in queue (vim-style)" },
+  { keys: "[ / ]", action: "Cycle queue filter (all → exception → …)" },
+  { keys: "← / →", action: "Cycle screen (shift · capacity · deadlines · about)" },
+  { keys: "Enter", action: "Focus site detail, or run summary when focused" },
+  { keys: "Ctrl+K / ⌘K", action: "Jump to site or quick ask" },
+  { keys: "/", action: "Focus what-if question box" },
+  { keys: "?", action: "This overlay" },
+  { keys: "Escape", action: "Close palette or shortcuts" },
 ];
 
 export default function ShortcutsHelp({ open, onClose }: Props) {
@@ -38,7 +41,7 @@ export default function ShortcutsHelp({ open, onClose }: Props) {
         <ul className="space-y-2">
           {BINDINGS.map((b) => (
             <li key={b.keys} className="flex items-center justify-between gap-4 text-sm">
-              <kbd className="rounded-ops border border-ops-line bg-ops-bg px-2 py-0.5 font-mono text-[11px] text-ops-amber">
+              <kbd className="border border-ops-line bg-black/60 px-2 py-0.5 font-mono text-[11px] text-ops-teal-hover">
                 {b.keys}
               </kbd>
               <span className="text-right text-xs text-ops-muted">{b.action}</span>

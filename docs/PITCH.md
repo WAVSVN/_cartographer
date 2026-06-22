@@ -48,7 +48,7 @@ Fleet and pipeline pages are **roll-up views** that drill into the console (`/?d
 | Priority | Wave | Why |
 |----------|------|-----|
 | 1 | **P9 — Shift onboarding** | First-run overlay: “start shift” in 3 steps (digest → top exception → handoff). Fixes “what do I do here?” |
-| 2 | **P10 — Action audit log** | Timestamped log: triage changes, runbook checks, briefs run. Export with handoff. **Governance story** for AI role. |
+| 2 | **P10 — Action audit log** | Timestamped log: triage changes, runbook checks, briefs run. Export with handoff. **Governance story** for AI role. ✅ |
 | 3 | **P11 — Simulated ingest** | One webhook/cron nudges fixture status (watch→exception). Console feels alive without real SCADA. |
 | 4 | **P12 — Role presets** | Operator / fleet / handoff default filters and layout — same app, different entry |
 | 5 | **P13 — Live LLM brief** | Optional layer on validated tool trace; keep deterministic default |

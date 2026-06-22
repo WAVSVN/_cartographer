@@ -35,7 +35,7 @@ export function buildPaletteItems(
     kind: "action",
     id: `action-${a.step}`,
     label: a.label,
-    subtitle: a.digest ? "Shift action · digest" : "Shift action · scenario",
+    subtitle: a.digest ? "Shift summary" : "What-if question",
     digest: Boolean(a.digest),
     query: a.query,
   }));

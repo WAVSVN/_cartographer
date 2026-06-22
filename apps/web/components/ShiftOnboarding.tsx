@@ -5,18 +5,18 @@ import { SectionLabel } from "./ui";
 
 const STEPS = [
   {
-    title: "Read the digest",
-    body: "Morning fleet summary — exceptions, deadlines, and top risks for this shift.",
-    action: "Run digest",
+    title: "Load shift summary",
+    body: "Fleet-wide snapshot: open issues, upcoming deadlines, and top risks for this shift.",
+    action: "Run summary",
   },
   {
-    title: "Triage top exception",
-    body: "Open the highest-ranked item in your queue. Review facts and runbook steps.",
-    action: "Open top item",
+    title: "Open the top site",
+    body: "Select the highest-scored item in the queue. Review facts, exception details, and runbook steps.",
+    action: "Open top site",
   },
   {
-    title: "Prep handoff",
-    body: "Log shift notes and export markdown for the next operator.",
+    title: "Notes for next shift",
+    body: "Log what you did and export a markdown bundle for the operator taking over.",
     action: "Open handoff",
   },
 ] as const;
@@ -75,7 +75,7 @@ export default function ShiftOnboarding({
       aria-modal="true"
       aria-labelledby="shift-onboarding-title"
     >
-      <div className="pointer-events-auto w-full max-w-md rounded-ops border border-ops-line bg-ops-panel p-4 shadow-lg sm:p-5">
+      <div className="pointer-events-auto w-full max-w-md border border-ops-line bg-black/90 p-4 sm:p-5">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
             <SectionLabel as="p" className="mb-1 block">
@@ -98,7 +98,7 @@ export default function ShiftOnboarding({
 
         {digestError && (
           <p className="mb-3 text-xs text-ops-critical" role="alert">
-            Digest failed — check connection and retry.
+            Digest failed — check connection and try again.
           </p>
         )}
 

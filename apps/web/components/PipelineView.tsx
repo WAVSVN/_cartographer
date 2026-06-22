@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { PipelineItem } from "@/lib/types";
+import { riskClassName } from "@/lib/risk-display";
 import { isDueWithin14, isOverdue } from "@/lib/sla-urgency";
 import SlaCountdown from "./SlaCountdown";
 import { PageHeader, SectionLabel, Skeleton, StatusBadge } from "./ui";
@@ -12,7 +13,7 @@ type PipelineFilter = "all" | "overdue" | "due-14";
 const PIPELINE_FILTERS: { id: PipelineFilter; label: string }[] = [
   { id: "all", label: "All" },
   { id: "overdue", label: "Overdue" },
-  { id: "due-14", label: "Due ≤14d" },
+  { id: "due-14", label: "Due within 14 days" },
 ];
 
 function sortByDeadline(items: PipelineItem[]): PipelineItem[] {
@@ -60,8 +61,8 @@ export default function PipelineView() {
   return (
     <div className="space-y-5 p-4">
       <PageHeader
-        title="Bridge → Permanent Pipeline"
-        subtitle={`${displayed.length} of ${items.length} transitions tracked`}
+        title="Commissioning deadlines"
+        subtitle={`${displayed.length} of ${items.length} bridge→permanent transitions`}
       />
 
       <div className="flex flex-wrap gap-3 border-b border-ops-line" role="tablist" aria-label="Pipeline filters">
@@ -74,8 +75,8 @@ export default function PipelineView() {
             onClick={() => setPipeFilter(f.id)}
             className={`-mb-px border-b-2 pb-1.5 text-xs transition ${
               pipeFilter === f.id
-                ? "border-ops-link text-ops-text"
-                : "border-transparent text-ops-muted hover:text-ops-text"
+                ? "border-ops-accent text-ops-accent"
+                : "border-transparent text-ops-chrome hover:border-ops-green/40 hover:text-ops-green"
             }`}
           >
             {f.label}
@@ -142,7 +143,7 @@ export default function PipelineView() {
                   <SlaCountdown days={p.days_to_deadline} />
                 </td>
                 <td className="py-2 pr-3 font-mono text-xs">{p.mw_gap} MW</td>
-                <td className="py-2 pr-3 font-mono text-xs tabular-nums text-ops-critical">
+                  <td className={`py-2 pr-3 font-mono text-xs tabular-nums ${riskClassName(p.risk_score)}`}>
                   {p.risk_score}
                 </td>
                 <td className="py-2">
@@ -170,7 +171,7 @@ function PipelineCard({ item: p }: { item: PipelineItem }) {
           </div>
           <p className="mt-1 text-xs text-ops-muted">{p.customer}</p>
         </div>
-        <span className="font-mono text-xs text-ops-critical">{p.risk_score}</span>
+        <span className={`font-mono text-xs tabular-nums ${riskClassName(p.risk_score)}`}>{p.risk_score}</span>
       </div>
       <div className="mt-2 grid grid-cols-3 gap-2 font-mono text-[10px]">
         <div>

@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Atlas AI Dev — Interview Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --accent: #1eff00;
+      --accent-dim: #659296;
+      --accent-hover: #9bb7c4;
+      --accent-muted: #355665;
+      --tree-line: #4a6a72;
+      --black: #000;
+      --white: #e8e8e8;
+      --gray: #a3a3a3;
+      --gray-dim: #8f9c9f;
+      --rule: rgba(101, 146, 150, 0.14);
+      --rule-hover: rgba(30, 255, 0, 0.35);
+      --font-ui: "Fira Code", Consolas, "Courier New", monospace;
+      --sidebar-w: 13.5rem;
+      --header-h: 2.35rem;
+      --tabbar-h: 3rem;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      height: 100dvh;
+      overflow: hidden;
+      color: var(--white);
+      background: var(--black);
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    a { color: var(--accent-dim); }
+
+    /* lockeddoor banner */
+    .lockeddoor {
+      color: var(--white);
+      font-size: 0.95rem;
+      letter-spacing: 2px;
+      padding: 0.65rem 1rem 0.35rem;
+      background: var(--black);
+      border-bottom: 1px solid #141414;
+      flex-shrink: 0;
+    }
+
+    .shell {
+      display: flex;
+      height: calc(100dvh - 2.1rem);
+      overflow: hidden;
+    }
+
+    /* —— tree sidebar (lockeddoor) —— */
+    .tree-sidebar {
+      display: none;
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      border-right: 1px solid #141414;
+      background: var(--black);
+      flex-direction: column;
+      padding: 0.75rem 0 0.5rem;
+      overflow-y: auto;
+    }
+
+    @media (min-width: 768px) {
+      .tree-sidebar { display: flex; }
+      .tab-bar { display: none !important; }
+      .shell .app { bottom: 0; }
+    }
+
+    .tree {
+      position: relative;
+      padding: 0 0.5rem 0 0.85rem;
+      font-size: 0.78rem;
+      flex: 1;
+    }
+
+    .tree ul {
+      list-style: none;
+      padding-left: 0.35rem;
+    }
+
+    .tree > ul > li {
+      position: relative;
+      padding: 0.2rem 0 0.2rem 0.85rem;
+    }
+
+    .tree > ul > li:before {
+      position: absolute;
+      top: 0.95rem;
+      left: 0;
+      width: 0.55rem;
+      height: 1px;
+      content: "";
+      background: var(--tree-line);
+    }
+
+    .tree > ul > li:after {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 1px;
+      content: "";
+      background: var(--tree-line);
+    }
+
+    .tree > ul > li:last-child:after { height: 0.95rem; bottom: auto; }
+
+    .tree-entry {
+      display: block;
+      width: 100%;
+      text-align: left;
+      font-family: var(--font-ui);
+      font-size: 0.76rem;
+      color: rgb(216, 217, 216);
+      background: none;
+      border: none;
+      padding: 0.28rem 0.35rem;
+      cursor: pointer;
+      line-height: 1.35;
+    }
+
+    .tree-entry:hover { color: var(--accent-hover); }
+    .tree-entry.active { color: var(--accent); }
+    .tree-entry.kb-focus { outline: 1px solid var(--accent); outline-offset: 2px; }
+
+    .tree-meta {
+      display: block;
+      font-size: 0.58rem;
+      color: var(--accent-muted);
+      letter-spacing: 0.02em;
+      margin-top: 0.1rem;
+      padding-left: 0.5rem;
+    }
+
+    .key-hint {
+      font-size: 0.58rem;
+      color: var(--accent-muted);
+      line-height: 1.45;
+      padding: 0.55rem 0.85rem 0;
+      border-top: 1px solid #141414;
+      margin-top: 0.35rem;
+    }
+
+    .key-hint kbd {
+      color: var(--accent-dim);
+      font-family: inherit;
+    }
+
+    /* —— main column —— */
+    .content-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      position: relative;
+    }
+
+    .lo-header {
+      flex-shrink: 0;
+      height: var(--header-h);
+      background: rgba(0,0,0,0.96);
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+    }
+
+    .lo-logo {
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--accent-dim);
+      text-transform: lowercase;
+    }
+
+    .lo-sub { font-size: 0.6rem; color: var(--accent-muted); }
+
+    .app {
+      position: absolute;
+      top: var(--header-h);
+      left: 0;
+      right: 0;
+      bottom: calc(var(--tabbar-h) + var(--safe-bottom));
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .app { bottom: 0; }
+    }
+
+    .panel {
+      display: none;
+      height: 100%;
+      overflow-y: auto;
+      padding: 0.85rem 1rem 1.25rem;
+      max-width: 42rem;
+    }
+
+    .panel.active { display: block; }
+
+    .lo-side-label {
+      font-size: 0.64rem;
+      color: var(--gray-dim);
+      letter-spacing: 0.08em;
+      text-transform: lowercase;
+      margin-bottom: 0.45rem;
+      padding-bottom: 0.28rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .lo-side-label strong { color: var(--accent-dim); font-weight: 500; }
+
+    .card {
+      border: 1px solid var(--rule);
+      background: rgba(0,0,0,0.45);
+      padding: 0.75rem 0.8rem;
+      margin-bottom: 0.45rem;
+      transition: border-color 0.12s;
+    }
+
+    .card.highlight { border-color: var(--rule-hover); }
+    .card.kb-focus { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(30,255,0,0.15); }
+
+    .card p, .card li { font-size: 0.78rem; color: var(--white); }
+    ul { padding-left: 1.1rem; }
+    li + li { margin-top: 0.28rem; }
+
+    .soundbite { font-size: 0.86rem; font-weight: 500; line-height: 1.45; }
+    .cue { display: block; font-size: 0.58rem; color: var(--gray-dim); margin-top: 0.35rem; text-transform: lowercase; letter-spacing: 0.06em; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 0.28rem; margin-top: 0.45rem; }
+    .tag { font-size: 0.58rem; padding: 0.16rem 0.38rem; border: 1px solid var(--rule); color: var(--gray-dim); text-transform: lowercase; }
+    .tag.strong { color: var(--accent-dim); border-color: rgba(101,146,150,0.45); }
+
+    .chip-row { display: flex; gap: 0.28rem; overflow-x: auto; scrollbar-width: none; margin-bottom: 0.5rem; }
+    .chip-row::-webkit-scrollbar { display: none; }
+
+    .chip {
+      flex: 0 0 auto;
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      text-transform: lowercase;
+      color: var(--gray-dim);
+      background: rgba(0,0,0,0.45);
+      border: 1px solid var(--rule);
+      padding: 0.28rem 0.5rem;
+      cursor: pointer;
+    }
+
+    .chip.active, .chip:hover, .chip.kb-focus { border-color: var(--rule-hover); color: var(--accent); outline: none; }
+
+    .stack-row {
+      display: grid;
+      grid-template-columns: 5rem 1fr;
+      gap: 0.4rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: 0.72rem;
+    }
+
+    .stack-row:last-child { border-bottom: none; }
+    .stack-label { color: var(--accent-dim); font-size: 0.62rem; text-transform: lowercase; }
+    .stack-val { color: var(--gray); line-height: 1.4; }
+
+    .beat {
+      display: grid;
+      grid-template-columns: 1.5rem 1fr;
+      gap: 0.45rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--rule);
+      font-size: 0.74rem;
+    }
+
+    .beat:last-child { border-bottom: none; }
+    .beat-n { color: var(--accent); font-weight: 600; font-size: 0.66rem; }
+    .beat-t { color: var(--white); font-weight: 500; margin-bottom: 0.15rem; }
+    .beat-b { color: var(--gray); font-size: 0.68rem; line-height: 1.4; }
+
+    .fit-row { margin-bottom: 0.45rem; }
+    .fit-ask { font-size: 0.6rem; color: var(--accent-dim); text-transform: lowercase; margin-bottom: 0.18rem; }
+    .fit-answer { font-size: 0.74rem; color: var(--white); border: 1px solid var(--rule); border-left: 2px solid var(--accent-dim); padding: 0.45rem 0.55rem; background: rgba(0,0,0,0.55); }
+    .fit-answer.honest { border-left-color: var(--gray-dim); }
+
+    .build-title { font-size: 0.7rem; color: var(--accent-dim); text-transform: lowercase; margin-bottom: 0.2rem; }
+    .build-body { font-size: 0.72rem; color: var(--gray); line-height: 1.4; }
+
+    .year-row { display: flex; gap: 0.28rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+
+    .year-btn {
+      font-family: var(--font-ui);
+      font-size: 0.64rem;
+      color: var(--gray-dim);
+      border: 1px solid var(--rule);
+      background: transparent;
+      padding: 0.25rem 0.45rem;
+      cursor: pointer;
+    }
+
+    .year-btn.active, .year-btn.kb-focus { color: var(--accent); border-color: var(--rule-hover); outline: none; }
+
+    .qa-answer {
+      border: 1px solid var(--rule-hover);
+      background: rgba(30, 255, 0, 0.03);
+      padding: 0.7rem 0.8rem;
+      margin-bottom: 0.5rem;
+      min-height: 4rem;
+    }
+
+    .qa-answer-q { font-size: 0.66rem; color: var(--accent-dim); margin-bottom: 0.3rem; line-height: 1.35; }
+    .qa-answer-a { font-size: 0.75rem; color: var(--white); line-height: 1.45; }
+    .qa-answer-a ul { margin-top: 0.3rem; font-size: 0.72rem; color: var(--gray); }
+
+    .qa-list { display: flex; flex-direction: column; gap: 0.25rem; }
+
+    .qa-item {
+      text-align: left;
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      color: var(--gray);
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--rule);
+      padding: 0.5rem 0.6rem;
+      cursor: pointer;
+      line-height: 1.35;
+    }
+
+    .qa-item.active { border-color: var(--rule-hover); color: var(--white); }
+    .qa-item.kb-focus { outline: 1px solid var(--accent); outline-offset: 1px; }
+
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      height: calc(var(--tabbar-h) + var(--safe-bottom));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(0,0,0,0.96);
+      border-top: 1px solid var(--rule);
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+    }
+
+    .tab {
+      font-family: var(--font-ui);
+      font-size: 0.56rem;
+      text-transform: lowercase;
+      color: var(--gray-dim);
+      background: none;
+      border: none;
+      border-top: 2px solid transparent;
+      cursor: pointer;
+      padding: 0.3rem 0.1rem;
+    }
+
+    .tab.active { color: var(--accent); border-top-color: var(--accent); }
+
+    .fill { color: var(--accent); }
+
+    .timeline-talk {
+      font-size: 0.72rem;
+      color: var(--gray);
+      font-style: italic;
+      line-height: 1.45;
+      margin-bottom: 0.55rem;
+      padding-left: 0.5rem;
+      border-left: 2px solid var(--accent-muted);
+    }
+
+    .timeline-section-label {
+      font-size: 0.6rem;
+      color: var(--accent-dim);
+      text-transform: lowercase;
+      letter-spacing: 0.06em;
+      margin: 0.55rem 0 0.28rem;
+    }
+
+    .timeline-section-label:first-of-type { margin-top: 0; }
+
+    #year-detail ul { margin-bottom: 0.35rem; }
+    #year-detail li { font-size: 0.74rem; color: var(--gray); line-height: 1.45; }
+  </style>
+</head>
+<body>
+
+  <pre class="lockeddoor">    atlas_interview</pre>
+
+  <div class="shell">
+    <aside class="tree-sidebar">
+      <nav class="tree" aria-label="File tree">
+        <ul id="tree-nav"></ul>
+      </nav>
+      <div class="key-hint">
+        <kbd>←</kbd><kbd>→</kbd> sections · <kbd>↑</kbd><kbd>↓</kbd> items<br>
+        <kbd>1</kbd>–<kbd>6</kbd> jump · <kbd>[</kbd> <kbd>]</kbd> qa filter
+      </div>
+    </aside>
+
+    <div class="content-col">
+      <header class="lo-header">
+        <div class="lo-logo" id="section-title">\ prep</div>
+        <div class="lo-sub" id="section-hint">arrow keys</div>
+      </header>
+
+      <div class="app">
+        <section class="panel active" id="panel-prep" data-panel="prep">
+          <div class="lo-side-label"><strong>open with</strong> — 30 sec</div>
+          <div class="card highlight" data-nav-item>
+            <p class="soundbite">I'm a designer-developer who's been building web products for years — most recently as lead dev/designer at ANOMALY ONE and before that CMU's design program site. Security has been a core value since my blue-team bootcamp. Lately most of my work is shipping real tools with AI agents in Cursor — not just chatting, but building workflows, MCP integrations, and production UIs end to end.</p>
+            <div class="tags">
+              <span class="tag strong">react / js</span>
+              <span class="tag strong">full-stack</span>
+              <span class="tag strong">llm workflows</span>
+              <span class="tag strong">security</span>
+              <span class="tag">mcp</span>
+              <span class="tag">agent skills</span>
+            </div>
+          </div>
+          <div class="lo-side-label" style="margin-top:0.75rem;"><strong>sound bites</strong></div>
+          <div class="card" data-nav-item><p class="soundbite">"The bottleneck moved from typing syntax to picking the right platform and communicating intent to agents."<span class="cue">how you work</span></p></div>
+          <div class="card" data-nav-item><p class="soundbite">"I'm skeptical of AI by default — hallucination isn't solved — so I validate outputs and treat agents as accelerators, not autopilot."<span class="cue">governance</span></p></div>
+          <div class="card" data-nav-item><p class="soundbite">"I encode repeatable workflows as agent skills — SOPs the model loads on demand — so I don't re-prompt every session."<span class="cue">if they ask skills</span></p></div>
+          <div class="card" data-nav-item><p class="soundbite">"I'd expect Atlas to start with grounded copilots and workflow automation on Graph and ops data — MCP into internal systems — not a public chatbot demo."<span class="cue">atlas angle</span></p></div>
+          <div class="card" data-nav-item><p class="soundbite">"Developers can build AI tooling customized to our use cases instead of waiting on a SaaS vendor's roadmap."<span class="cue">why this role</span></p></div>
+        </section>
+
+        <section class="panel" id="panel-atlas" data-panel="atlas">
+          <div class="lo-side-label"><strong>what they'd want built</strong></div>
+          <div class="card highlight" data-nav-item>
+            <p class="soundbite" style="font-size:0.8rem;">Not training foundation models — wiring LLMs/ML into logistics, sand supply, power, and field ops on Microsoft/Azure with governance and monitoring.</p>
+          </div>
+          <div class="card build-card" data-nav-item><div class="build-title">1 · internal copilots (rag)</div><div class="build-body">Safety SOPs, logistics procedures, power contracts, HR policy — Q&amp;A over SharePoint/Teams with citations. NL access to ops metrics.</div></div>
+          <div class="card build-card" data-nav-item><div class="build-title">2 · workflow automation</div><div class="build-body">Late loads, equipment faults → summarize, draft comms, open ticket, Teams notify. Graph calendar/email. Approval + audit trail.</div></div>
+          <div class="card build-card" data-nav-item><div class="build-title">3 · mcp integration layer</div><div class="build-body">Read-only: delivery status, mine production, assets. Guarded writes with human approve. Extensible harness for JDE, Oracle, SCADA.</div></div>
+          <div class="card build-card" data-nav-item><div class="build-title">4 · computer vision</div><div class="build-body">Trucks, conveyors, mines, autonomous fleet — PPE, inspection assist, remote triage. CV signal; LLM explains + recommends.</div></div>
+          <div class="card build-card" data-nav-item><div class="build-title">5 · telemetry ml</div><div class="build-body">Anomaly detection on plant/conveyor/truck signals. Predictive maintenance. Capacity planning as power scales.</div></div>
+          <div class="card build-card" data-nav-item><div class="build-title">6 · platform / governance</div><div class="build-body">Prompt eval + regression. Cost/latency monitoring. Approved tools. Incident response. Builder + babysitter.</div></div>
+          <div class="lo-side-label" style="margin-top:0.65rem;"><strong>business lines</strong></div>
+          <div class="card" data-nav-item>
+            <div class="stack-row"><div class="stack-label">logistics</div><div class="stack-val">Dispatch, delivery Q&amp;A, exceptions, CV, telemetry — Dune Express, autonomous trucks</div></div>
+            <div class="stack-row"><div class="stack-label">power</div><div class="stack-val">Contract copilots, capacity planning — fast-growing, document-heavy</div></div>
+            <div class="stack-row"><div class="stack-label">shared</div><div class="stack-val">Policy bots, Teams glue, eval infra</div></div>
+          </div>
+          <div class="lo-side-label" style="margin-top:0.65rem;"><strong>not first</strong></div>
+          <div class="card" data-nav-item><ul><li>Ungrounded public chatbot</li><li>Model training before integrations</li><li>ERP writes without approval</li><li>Deck with no shipped tool</li></ul></div>
+          <div class="lo-side-label" style="margin-top:0.65rem;"><strong>role fit</strong></div>
+          <div class="fit-row" data-nav-item><div class="fit-ask">posting</div><div class="fit-answer">Chat, automation, MCP, vision · Graph/Azure · eval · auth/audit · monitor</div></div>
+          <div class="fit-row" data-nav-item><div class="fit-ask">you</div><div class="fit-answer">Agents + MCP + skills/rules + security + React/JS/Python</div></div>
+          <div class="fit-row" data-nav-item><div class="fit-ask">gap</div><div class="fit-answer honest">Azure/Graph depth; formal ML vs applied LLM</div></div>
+        </section>
+
+        <section class="panel" id="panel-agents" data-panel="agents">
+          <div class="lo-side-label"><strong>agent skills</strong></div>
+          <div class="card highlight" data-nav-item><p class="soundbite">"Skills = reusable SOPs on demand. Rules = always-on guardrails. Prompts stay short; behavior stays consistent."</p></div>
+          <div class="card" data-nav-item>
+            <div class="stack-row"><div class="stack-label">skills</div><div class="stack-val">Playbooks loaded when job matches</div></div>
+            <div class="stack-row"><div class="stack-label">rules</div><div class="stack-val">Security, scope, repo patterns</div></div>
+            <div class="stack-row"><div class="stack-label">mcp</div><div class="stack-val">Agents → APIs, debuggers, DBs</div></div>
+            <div class="stack-row"><div class="stack-label">models</div><div class="stack-val">Composer volume; higher tier review</div></div>
+          </div>
+          <div class="lo-side-label" style="margin-top:0.65rem;"><strong>prompting</strong> — 5 beats</div>
+          <div class="card" data-nav-item>
+            <div class="beat"><div class="beat-n">1</div><div><div class="beat-t">Outcome + context</div><div class="beat-b">Deliverable + @files</div></div></div>
+            <div class="beat"><div class="beat-n">2</div><div><div class="beat-t">Slice work</div><div class="beat-b">Plan → build → verify</div></div></div>
+            <div class="beat"><div class="beat-n">3</div><div><div class="beat-t">Untrusted output</div><div class="beat-b">Read diffs; eval + regression</div></div></div>
+            <div class="beat"><div class="beat-n">4</div><div><div class="beat-t">Encode standards</div><div class="beat-b">Skills/rules; auditor ≠ reviewer</div></div></div>
+            <div class="beat"><div class="beat-n">5</div><div><div class="beat-t">Customize harness</div><div class="beat-b">Observability into agent work</div></div></div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-story" data-panel="story">
+          <div class="lo-side-label"><strong>timeline</strong> — ↑↓ years</div>
+          <div class="year-row" id="year-row"></div>
+          <div class="card highlight" id="year-detail"></div>
+        </section>
+
+        <section class="panel" id="panel-qa" data-panel="qa">
+          <div class="lo-side-label"><strong>if they ask</strong> — ↑↓ questions · [ ] filter</div>
+          <div class="chip-row" id="qa-filters"></div>
+          <div class="qa-answer" id="qa-answer"></div>
+          <div class="qa-list" id="qa-list"></div>
+        </section>
+
+        <section class="panel" id="panel-end" data-panel="end">
+          <div class="lo-side-label"><strong>ask them</strong></div>
+          <div class="card" data-nav-item><ul>
+            <li>What AI is in production vs pilot?</li>
+            <li>Tech embedded with ops or centralized?</li>
+            <li>Agent / MCP / Copilot Studio stack?</li>
+            <li>Prompt eval before deploy?</li>
+            <li>Skills/playbooks or ad-hoc?</li>
+            <li>First 90 days success?</li>
+            <li>Which line gets AI first — logistics, power, shared?</li>
+          </ul></div>
+          <div class="lo-side-label" style="margin-top:0.75rem;"><strong>remember</strong></div>
+          <div class="card highlight" data-nav-item><ul>
+            <li>Slow down — clarity beats speed</li>
+            <li>Shipped work first, then agent story</li>
+            <li>Energy = reliability, security, internal tooling</li>
+            <li>OK to pause: "let me think for a second"</li>
+          </ul></div>
+          <div class="lo-side-label" style="margin-top:0.75rem;"><strong>fill in</strong></div>
+          <div class="card" data-nav-item><ul>
+            <li><span class="fill">Austin / relocation</span></li>
+            <li><span class="fill">Comp range</span></li>
+            <li><span class="fill">Start date / notice</span></li>
+            <li><span class="fill">Work authorization</span></li>
+          </ul></div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <nav class="tab-bar" aria-label="Sections">
+    <button class="tab active" data-tab="prep" type="button">prep</button>
+    <button class="tab" data-tab="atlas" type="button">atlas</button>
+    <button class="tab" data-tab="agents" type="button">agents</button>
+    <button class="tab" data-tab="story" type="button">story</button>
+    <button class="tab" data-tab="qa" type="button">qa</button>
+    <button class="tab" data-tab="end" type="button">end</button>
+  </nav>
+
+  <script>
+    const TABS = [
+      { id: 'prep', label: '\\ prep', meta: 'intro + bites', hint: '↑↓ sound bites' },
+      { id: 'atlas', label: '\\ atlas_brief', meta: 'what to build', hint: '↑↓ build items' },
+      { id: 'agents', label: '\\ agents', meta: 'skills + prompts', hint: '↑↓ cards' },
+      { id: 'story', label: '\\ timeline', meta: 'career arc', hint: '↑↓ years' },
+      { id: 'qa', label: '\\ qa_bank', meta: 'if they ask', hint: '↑↓ questions · [ ] filter' },
+      { id: 'end', label: '\\ close', meta: 'ask + remember', hint: '↑↓ checklist' },
+    ];
+
+    const TIMELINE = [
+      {
+        year: '2010',
+        title: 'Grew up around computers',
+        talk: 'Not a late pivot — curiosity was always there.',
+        bullets: [
+          'Surrounded by people interested in computers growing up',
+          'Equally interested myself — self-directed from early on',
+          'Foundation for everything after: comfortable with machines before it was a career',
+        ],
+      },
+      {
+        year: '2018',
+        title: 'Graphic design degree — deliberate path into front-end',
+        talk: 'Design school was the vehicle, front-end + custom UI were always the goal.',
+        bullets: [
+          'Went to school immediately after high school',
+          'Chose graphic design because it was the only major whose curriculum let me develop real HTML/CSS/JS skills',
+          'Personal focus throughout: front-end web development alongside design coursework',
+          'Got deeply into custom user interface design — not just visuals, how interfaces feel and work',
+          'Design-first, but code-capable from day one — not a bootcamp dev who learned design later',
+        ],
+      },
+      {
+        year: '2022',
+        title: 'CMU remote contractor — syllabus / gallery site',
+        talk: 'First real production ownership: design, build, backend, multi-year maintenance — all remote.',
+        bullets: [
+          'Hired after school as remote contractor by CMU design program',
+          'Designed and built a site that functioned as digital syllabus + gallery for the program',
+          'Owned backend build and maintenance through 2024',
+          '2024: new curriculum replaced the site and significantly scaled back my personal design language on it',
+          'Real client, real users, long-term responsibility — not a class project',
+        ],
+      },
+      {
+        year: '2023',
+        title: 'Cybersecurity bootcamp · early AI era · ANOMALY ONE',
+        talk: 'Security became production-grade; AI was arriving but not ready to write code; ANOMALY ONE became home base.',
+        sections: [
+          { label: 'level effect bootcamp', items: [
+            'Graduated Level Effect cybersecurity bootcamp',
+            'Blue team tactics and best practices from industry professionals',
+            'Security was always a core value — but only self-taught before this',
+            'Learned that production systems need great UX and security as equal priorities',
+          ]},
+          { label: 'early chatgpt / copilot', items: [
+            'Around when ChatGPT hit beta/public release',
+            'VS Code Copilot autocomplete in beta around the same window',
+            'Useful for brainstorming ideas — not great at writing real code yet',
+            'Important context: you\'ve watched the whole arc, not just the current hype cycle',
+          ]},
+          { label: 'anomaly one', items: [
+            'Hired as main designer/developer at ANOMALY ONE',
+            'Still in that role today — lead craft + build for the label/roster',
+          ]},
+        ],
+      },
+      {
+        year: '2025',
+        title: 'Lucid Obscura · Cursor · custom hardware UI',
+        talk: 'Client craft at scale, then a major leap in how you build when Cursor beat Copilot.',
+        sections: [
+          { label: 'lucid obscura', items: [
+            'Custom design and development for several artists on the ANOMALY ONE roster',
+            'Delivered under Lucid Obscura — your design service brand',
+            'Full client loop: spec → design language → build → ship',
+          ]},
+          { label: 'cursor', items: [
+            'Already deep in VS Code — natural move to Cursor',
+            'Felt a substantial quality jump from Copilot alone',
+            'This is when agent-assisted dev became daily practice, not experimental',
+          ]},
+          { label: 'hardware / live ui', items: [
+            'Built custom hardware configurations and enclosures',
+            'Housing custom interfaces designed for your personal music project (Systems Critical / live rig)',
+            'Design + dev + physical product — not just web screens',
+          ]},
+        ],
+      },
+      {
+        year: '2026',
+        title: 'Agent-driven development — daily reality',
+        talk: 'The barrier moved from typing speed to platform choice + communicating intent. Still skeptical. Still shipping.',
+        sections: [
+          { label: 'how you saw it coming', items: [
+            'Transformers predict the next token — figured code models would eventually beat early chatbots',
+            'Syntax in a codebase is structured by nature — easier for models than open-ended prose',
+            'The speed it actually happened still caught you somewhat off guard',
+          ]},
+          { label: 'skepticism (still valid)', items: [
+            'Wary of AI because of hallucination — tendency to state false things confidently',
+            'That problem is not fully solved — you don\'t trust blindly',
+            'Agents are accelerators; humans still own truth and ship decisions',
+          ]},
+          { label: 'daily stack', items: [
+            'Most time building tools and services for WAVSVN projects + ANOMALY ONE',
+            'Primary: Cursor + Composer 2.5 most of the time',
+            'Other model APIs burn usage fast on Cursor\'s harness — tier models to the task',
+            'Higher-end models: review, planning, hard bugs — not every keystroke',
+            'Mid-tier frontier models code well — if you know what you\'re doing and verify output',
+          ]},
+          { label: 'how the job changed', items: [
+            'Old barrier: how well you know a language + how fast you type',
+            'New barrier: picking the right language/platform for the use case + conveying intent to agents',
+            'Once the core is built, customize yourself if you know the stack — or keep pairing with agents',
+            'Can take someone\'s spec about their ideal final product and actually build it end to end',
+          ]},
+          { label: 'cursor mods (harness work)', items: [
+            'Modding Cursor itself — core binary patches',
+            'See agent thinking threads in real time',
+            'Auto-open tool call and terminal chat widgets',
+            'Auto-open in-chat code edits so you watch what agents change as it happens',
+            'Same mindset as production AI observability — you need to see the system work',
+          ]},
+          { label: 'build vs buy', items: [
+            'SaaS giants (Oracle, etc.) advertising AI-integrated products',
+            'Belief: developers can build this tooling ourselves — customized to our apps and use cases',
+            'No waiting on vendor uptime, roadmap, or how they choose to build software',
+            'Coding time changed — ownership of internal AI tooling is realistic now',
+          ]},
+          { label: 'velocity philosophy', items: [
+            'Good software used to take a very long time to build',
+            'Good software still takes longer than bad software to build',
+            'Bad software is incredibly fast to build — and that\'s useful for rapid testing of ideas',
+            'Know which mode you\'re in before you ship',
+          ]},
+        ],
+      },
+    ];
+
+    const QA = [
+      { cat: 'opener', q: 'Tell me about yourself', a: 'Use prep tab intro. Arc: computers early → design → CMU → bootcamp → ANOMALY ONE lead → agent shipping. End: excited to build internal AI on real ops, not demos.' },
+      { cat: 'opener', q: 'Walk me through your resume', a: 'Hit CMU ownership, bootcamp + lead role, 2025–26 agent workflow (not "I use ChatGPT"). Design degree = you ship UI + backend. Story tab for years.' },
+      { cat: 'opener', q: 'Why design → developer → AI?', a: 'Design curriculum let me build HTML/CSS/JS seriously. AI dev = conversational UI + workflow design + integration layer underneath.' },
+      { cat: 'opener', q: 'Why security bootcamp?', a: 'Production needs more than self-taught security. Blue team = validate inputs, audit trails. Agent output is untrusted input — same frame as AI governance.' },
+      { cat: 'ai', q: 'Prompting / agent skills?', a: 'Agents tab. Skills = SOPs, rules = guardrails, outcome + files first, slice work, verify diffs, MCP for integrations. Daily 1+ year.' },
+      { cat: 'ai', q: 'How do you handle hallucination?', a: 'Never ship without reading diff. Smaller tasks. Fixed eval scenarios. Agents draft; humans approve. Escalate on sensitive data.' },
+      { cat: 'ai', q: 'Explain RAG / embeddings', a: 'Embeddings = meaning as vectors. RAG = retrieve relevant chunks at query time, inject context, generate — grounds answers in your docs (policies, ops, tickets).' },
+      { cat: 'ai', q: 'MCP server experience?', a: 'Daily in dev — TD, docs, debuggers, APIs. Standardized tool interface vs bespoke scripts. Same pattern as Graph/internal ops APIs.' },
+      { cat: 'ai', q: 'LLM project end to end', a: '_cartographer (TS rebuild, Vercel) or internal workflow tools. Problem → spec → skills/rules → slices → review diffs → deploy → feedback loop.' },
+      { cat: 'ai', q: 'Test AI before production?', a: '<ul><li>Prompt eval on fixed scenarios</li><li>Regression golden cases after changes</li><li>Schema/output validation</li><li>Human diff review + smoke test</li><li>Cost/latency check</li></ul>' },
+      { cat: 'ai', q: 'Sensitive data / compliance', a: 'Approved tools only. No secrets/PII in public models. Rules encode data boundaries. Escalate exceptions — matches posting.' },
+      { cat: 'ai', q: 'Computer vision?', a: 'Honest gap — not primary today. Comfortable with model API → validation → workflow. Strength = app layer + agent harness around models.' },
+      { cat: 'ai', q: 'Azure / Graph / Power Platform?', a: 'Not primary yet. REST/JSON habits transfer. Graph = auth, scopes, paginated resources. Interested in Copilot Studio/Foundry. Don\'t bluff depth.' },
+      { cat: 'ai', q: 'CI/CD, Git, containers?', a: 'Git/GitHub daily; Vercel deploys. Understand build/test/promote. Containers familiar. Will adopt Atlas pipeline on ramp.' },
+      { cat: 'ai', q: 'Monitor AI in production?', a: 'Latency, errors, token cost, user correction rate. Log tool calls. Iterate prompts/skills when analytics show drift.' },
+      { cat: 'ai', q: 'Build vs buy SaaS AI?', a: 'SaaS for commodity; ops workflows need custom integration + governance you control. Coding got faster — someone still owns spec, security, maintenance.' },
+      { cat: 'ai', q: 'Where could AI help in energy ops?', a: 'See atlas tab. Copilots on procedures, exception automation, RAG on ops docs, dispatch assist, CV at sites, telemetry anomalies. Human-in-the-loop for safety-critical.' },
+      { cat: 'ai', q: 'What would you build here first?', a: 'Grounded internal copilot on SharePoint/Teams + one high-pain workflow automation (logistics exception or ticket routing) with MCP read tools and audit logging. Prove value before breadth.' },
+      { cat: 'projects', q: 'Project most proud of?', a: 'CMU site (years, design+backend) OR ANOMALY ONE/Lucid Obscura (client craft) OR _cartographer (agent-native velocity). Match their interest.' },
+      { cat: 'projects', q: 'Shareable artifacts?', a: 'WAVSVN repo, _cartographer on Vercel, Lucid Obscura site, CMU production history. Lead with live + what you personally built.' },
+      { cat: 'projects', q: 'Hardest technical problem?', a: 'STAR ready: CMU backend issue, client deadline, or agent wrong abstraction → narrow scope → verify fix → shipped outcome. One concrete story.' },
+      { cat: 'projects', q: 'When agent output was wrong?', a: 'Caught in diff/smoke test. Reject/rollback, tighten prompt/skill, add eval case. You trust process, not model.' },
+      { cat: 'role', q: 'Why Atlas / energy company?', a: 'Ops-heavy — logistics, power, proppant. AI on real data with governance. They invest in automation + remote ops. Build tools field and office actually use.' },
+      { cat: 'role', q: 'What do you know about Atlas?', a: 'NYSE AESI. Permian proppant/logistics, distributed power scaling, autonomous trucking, Dune Express. Tech + automation mission. Austin HQ.' },
+      { cat: 'role', q: 'Why this role now?', a: 'Apply agent + full-stack skills on dedicated AI team at scale with enterprise governance — AI as the job, not a side tool.' },
+      { cat: 'role', q: 'Entry-level but overqualified?', a: 'Title entry; practice isn\'t. CMU ownership, ANOMALY ONE lead, daily agent shipping. Bring velocity; they bring enterprise context.' },
+      { cat: 'role', q: 'Biggest weakness?', a: 'Azure/Graph depth. Secondary: formal ML vs applied LLM. Compensate: integration habits, fast ramp.' },
+      { cat: 'role', q: 'Learn new tech quickly?', a: 'One vertical slice — one API, one deploy, one screen. Agents scaffold; you verify. Bootcamp proves ramp on new domains.' },
+      { cat: 'role', q: 'Non-technical stakeholders?', a: 'CMU faculty, artists, label ops. Translate wants → specs + fast prototypes. Set hallucination expectations; loop feedback into skills.' },
+      { cat: 'role', q: 'Disagreement example?', a: 'Flashy vs maintainable, or scope creep with agents. Align on outcome metric; ship thin slice to settle with evidence.' },
+      { cat: 'role', q: 'Stay current with AI?', a: 'Daily use in real projects. Try releases in production context. Skeptical of hype — trust what survives in prod.' },
+      { cat: 'logistics', q: 'Austin / relocation?', a: '<span class="fill">Fill in before call.</span> Posting says Austin TX. Know: local, relocate, timeline. CMU remote proves distributed delivery.' },
+      { cat: 'logistics', q: 'Work authorization?', a: 'Posting requires US work without future sponsorship. Answer yes/no clearly.' },
+      { cat: 'logistics', q: 'Comp expectations?', a: '<span class="fill">Fill in before call.</span> Research Austin entry AI ranges. Anchor total comp (100% medical + 401k).' },
+      { cat: 'logistics', q: 'Timeline / notice?', a: '<span class="fill">Fill in before call.</span> Honest start date. Enthusiasm for Atlas > playing offers on first call.' },
+      { cat: 'logistics', q: 'Questions for us?', a: 'End tab — always have 2–3. Zero questions looks unprepared.' },
+    ];
+
+    const CATS = [
+      { id: 'all', label: 'all' },
+      { id: 'opener', label: 'about' },
+      { id: 'ai', label: 'ai' },
+      { id: 'projects', label: 'proof' },
+      { id: 'role', label: 'role' },
+      { id: 'logistics', label: 'log' },
+    ];
+
+    let tabIndex = 0;
+    let activeCat = 'all';
+    let catIndex = 0;
+    let activeQ = 0;
+    let activeYear = 5;
+    let itemIndex = 0;
+
+    const sectionTitle = document.getElementById('section-title');
+    const sectionHint = document.getElementById('section-hint');
+    const treeNav = document.getElementById('tree-nav');
+    const yearRow = document.getElementById('year-row');
+    const yearDetail = document.getElementById('year-detail');
+    const qaFilters = document.getElementById('qa-filters');
+    const qaAnswer = document.getElementById('qa-answer');
+    const qaList = document.getElementById('qa-list');
+
+    function currentTab() { return TABS[tabIndex].id; }
+
+    function setTab(id) {
+      const idx = TABS.findIndex(t => t.id === id);
+      if (idx < 0) return;
+      tabIndex = idx;
+      itemIndex = 0;
+      document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === id));
+      document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.dataset.panel === id));
+      document.querySelectorAll('.tree-entry').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
+      sectionTitle.textContent = TABS[tabIndex].label;
+      sectionHint.textContent = TABS[tabIndex].hint;
+      updateItemFocus();
+    }
+
+    function filteredQA() {
+      return activeCat === 'all' ? QA : QA.filter(x => x.cat === activeCat);
+    }
+
+    function renderYear() {
+      const t = TIMELINE[activeYear];
+      let html = '<p class="soundbite" style="font-size:0.8rem;margin-bottom:0.35rem;">' + t.year + ' — ' + t.title + '</p>';
+      if (t.talk) html += '<p class="timeline-talk">' + t.talk + '</p>';
+      if (t.sections) {
+        t.sections.forEach(s => {
+          html += '<div class="timeline-section-label">' + s.label + '</div><ul>';
+          html += s.items.map(item => '<li>' + item + '</li>').join('');
+          html += '</ul>';
+        });
+      } else if (t.bullets) {
+        html += '<ul>' + t.bullets.map(b => '<li>' + b + '</li>').join('') + '</ul>';
+      }
+      yearDetail.innerHTML = html;
+      yearRow.querySelectorAll('.year-btn').forEach((b, i) => b.classList.toggle('active', i === activeYear));
+    }
+
+    TIMELINE.forEach((t, i) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'year-btn' + (i === activeYear ? ' active' : '');
+      b.textContent = t.year;
+      b.addEventListener('click', () => { activeYear = i; renderYear(); updateItemFocus(); });
+      yearRow.appendChild(b);
+    });
+    renderYear();
+
+    function renderQA() {
+      const items = filteredQA();
+      if (activeQ >= items.length) activeQ = 0;
+      const cur = items[activeQ] || items[0];
+      if (!cur) return;
+      qaAnswer.innerHTML = '<div class="qa-answer-q">' + cur.q + '</div><div class="qa-answer-a">' + cur.a + '</div>';
+      qaList.innerHTML = '';
+      items.forEach((item, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'qa-item' + (i === activeQ ? ' active' : '');
+        btn.textContent = item.q;
+        btn.addEventListener('click', () => { activeQ = i; itemIndex = i; renderQA(); updateItemFocus(); });
+        qaList.appendChild(btn);
+      });
+    }
+
+    CATS.forEach((c, i) => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chip' + (c.id === activeCat ? ' active' : '');
+      chip.textContent = c.label;
+      chip.dataset.cat = c.id;
+      chip.addEventListener('click', () => { activeCat = c.id; catIndex = i; activeQ = 0; itemIndex = 0; syncFilterChips(); renderQA(); updateItemFocus(); });
+      qaFilters.appendChild(chip);
+    });
+
+    function syncFilterChips() {
+      qaFilters.querySelectorAll('.chip').forEach(ch => ch.classList.toggle('active', ch.dataset.cat === activeCat));
+    }
+
+    TABS.forEach(t => {
+      const li = document.createElement('li');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'tree-entry' + (t.id === currentTab() ? ' active' : '');
+      btn.dataset.tab = t.id;
+      btn.innerHTML = t.label + '<span class="tree-meta">' + t.meta + '</span>';
+      btn.addEventListener('click', () => setTab(t.id));
+      li.appendChild(btn);
+      treeNav.appendChild(li);
+    });
+
+    document.querySelectorAll('.tab').forEach(btn => {
+      btn.addEventListener('click', () => setTab(btn.dataset.tab));
+    });
+
+    function getNavItems() {
+      const tab = currentTab();
+      if (tab === 'qa') return Array.from(qaList.querySelectorAll('.qa-item'));
+      if (tab === 'story') return Array.from(yearRow.querySelectorAll('.year-btn'));
+      const panel = document.getElementById('panel-' + tab);
+      return panel ? Array.from(panel.querySelectorAll('[data-nav-item], .fit-row')) : [];
+    }
+
+    function updateItemFocus() {
+      document.querySelectorAll('.kb-focus').forEach(el => el.classList.remove('kb-focus'));
+      const tab = currentTab();
+      if (tab === 'qa') {
+        const items = qaList.querySelectorAll('.qa-item');
+        if (items[activeQ]) items[activeQ].classList.add('kb-focus');
+        if (qaFilters.querySelectorAll('.chip')[catIndex]) qaFilters.querySelectorAll('.chip')[catIndex].classList.add('kb-focus');
+        return;
+      }
+      if (tab === 'story') {
+        const btns = yearRow.querySelectorAll('.year-btn');
+        if (btns[activeYear]) btns[activeYear].classList.add('kb-focus');
+        return;
+      }
+      const items = getNavItems();
+      if (items[itemIndex]) {
+        items[itemIndex].classList.add('kb-focus');
+        items[itemIndex].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    }
+
+    function moveItem(dir) {
+      const tab = currentTab();
+      if (tab === 'qa') {
+        const items = filteredQA();
+        activeQ = Math.max(0, Math.min(items.length - 1, activeQ + dir));
+        itemIndex = activeQ;
+        renderQA();
+        updateItemFocus();
+        return;
+      }
+      if (tab === 'story') {
+        activeYear = Math.max(0, Math.min(TIMELINE.length - 1, activeYear + dir));
+        renderYear();
+        updateItemFocus();
+        return;
+      }
+      const items = getNavItems();
+      if (!items.length) return;
+      itemIndex = Math.max(0, Math.min(items.length - 1, itemIndex + dir));
+      updateItemFocus();
+    }
+
+    function cycleFilter(dir) {
+      if (currentTab() !== 'qa') return;
+      catIndex = (catIndex + dir + CATS.length) % CATS.length;
+      activeCat = CATS[catIndex].id;
+      activeQ = 0;
+      itemIndex = 0;
+      syncFilterChips();
+      renderQA();
+      updateItemFocus();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.target.matches('input, textarea, select')) return;
+
+      if (e.key >= '1' && e.key <= '6') {
+        setTab(TABS[parseInt(e.key, 10) - 1].id);
+        e.preventDefault();
+        return;
+      }
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          tabIndex = (tabIndex - 1 + TABS.length) % TABS.length;
+          setTab(TABS[tabIndex].id);
+          e.preventDefault();
+          break;
+        case 'ArrowRight':
+          tabIndex = (tabIndex + 1) % TABS.length;
+          setTab(TABS[tabIndex].id);
+          e.preventDefault();
+          break;
+        case 'ArrowUp':
+          moveItem(-1);
+          e.preventDefault();
+          break;
+        case 'ArrowDown':
+          moveItem(1);
+          e.preventDefault();
+          break;
+        case '[':
+          cycleFilter(-1);
+          e.preventDefault();
+          break;
+        case ']':
+          cycleFilter(1);
+          e.preventDefault();
+          break;
+      }
+    });
+
+    renderQA();
+    updateItemFocus();
+  </script>
+</body>
+</html>

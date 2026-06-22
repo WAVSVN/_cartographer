@@ -10,9 +10,9 @@ import type {
   RiskRankedDeployment,
   Runbook,
   ScenarioResult,
-  ToolLogEntry,
   MwBucket,
 } from "@cartographer/schemas";
+import { executePlannedQuery, planQuery, type QueryContext } from "./query-planner.js";
 import { TOOL_SCHEMAS } from "./tool-schemas.js";
 import { validateBrief } from "./validate-brief.js";
 
@@ -242,86 +242,23 @@ export class OpsContext {
     return { generated_at, fleet, top_risks, upcoming_deadlines, brief };
   }
 
-  generateBrief(query: string): BriefResponse {
-    const tools: ToolLogEntry[] = [];
+  generateBrief(query: string, context?: QueryContext): BriefResponse {
     const generatedAt = new Date().toISOString();
-    let brief = this.resolveQuery(query);
-
-    if (!brief) {
-      for (const id of this.extractDeploymentIds(query)) {
-        this.logTool("get_deployment", { deployment_id: id }, this.getDeployment(id), tools);
-        const dep = this.getDeployment(id);
-        if (dep) {
-          if (dep.exception_code) {
-            this.logTool("get_runbook_snippet", { exception_code: dep.exception_code }, this.getRunbookSnippet(dep.exception_code), tools);
-          }
-          this.logTool("get_contract_terms", { customer_id: dep.customer_id }, this.getContractTerms(dep.customer_id), tools);
-          brief = this.buildBriefForDeployment(dep);
-          break;
-        }
-      }
-    }
-
-    if (!brief && this.wantsExceptionList(query)) {
-      this.logTool("list_exceptions", {}, this.listExceptions(), tools);
-      brief = this.buildExceptionQueueBrief();
-    }
-
-    if (!brief) {
-      brief = {
-        summary:
-          'Try: "Morning ops digest", "If BRG-1102 slips 4 weeks who breaches SLA?", "What is our 2026-H2 GFA tranche gap?", or "Deployment BRG-2047 is red — what happened?"',
-        severity: "low",
-        recommended_actions: [
-          "Use /fleet for MW rollups and /pipeline for bridge deadlines.",
-          "Reference a deployment ID (BRG-#### or PRM-####).",
-        ],
-        citations: [{ source: "system.prompt_hints" }],
-      };
-    }
-
-    if (this.wantsMorningDigest(query)) {
-      this.logTool("get_fleet_summary", {}, this.getFleetSummary(), tools);
-      this.logTool("get_pipeline", {}, this.getPipeline(), tools);
-      this.logTool("list_exceptions", {}, this.listExceptions(), tools);
-      brief = this.buildMorningDigest().brief;
-    }
-
-    if (this.wantsFleetSummary(query) && !tools.some((t) => t.tool === "get_fleet_summary")) {
-      this.logTool("get_fleet_summary", {}, this.getFleetSummary(), tools);
-    }
-
-    const scenario = this.parseScenarioQuery(query);
-    if (scenario && !this.wantsSlaBreachScan(query)) {
-      this.logTool("run_scenario", { deployment_id: scenario.deploymentId, slip_weeks: scenario.slipWeeks }, this.runInterconnectionSlip(scenario.deploymentId, scenario.slipWeeks), tools);
-      this.logTool("get_contract_terms", { customer_id: this.getDeployment(scenario.deploymentId)?.customer_id }, this.getContractTerms(this.getDeployment(scenario.deploymentId)?.customer_id ?? ""), tools);
-    }
-
-    if (this.wantsSlaBreachScan(query)) {
-      this.logTool("get_fleet_summary", {}, this.getFleetSummary(), tools);
-      this.logTool("get_pipeline", {}, this.getPipeline(), tools);
-    }
-
-    if (brief && !this.wantsMorningDigest(query)) {
-      if (this.wantsExceptionList(query) && !tools.some((t) => t.tool === "list_exceptions")) {
-        this.logTool("list_exceptions", {}, this.listExceptions(), tools);
-      }
-      for (const id of this.extractDeploymentIds(query)) {
-        if (!tools.some((t) => t.tool === "get_deployment" && t.args.deployment_id === id)) {
-          const dep = this.getDeployment(id);
-          this.logTool("get_deployment", { deployment_id: id }, dep, tools);
-          if (dep?.exception_code) {
-            this.logTool("get_runbook_snippet", { exception_code: dep.exception_code }, this.getRunbookSnippet(dep.exception_code), tools);
-          }
-          if (dep) {
-            this.logTool("get_contract_terms", { customer_id: dep.customer_id }, this.getContractTerms(dep.customer_id), tools);
-          }
-        }
-      }
-    }
-
+    const knownCodes = Object.keys(this.data.runbooks);
+    const plan = planQuery(query, this.data.deployments, knownCodes, context);
+    const { brief, tools } = executePlannedQuery(this, plan, query);
     const validation = validateBrief(brief, this.knownIds);
-    return { brief, validation, tools, generated_at: generatedAt };
+    return {
+      brief,
+      validation,
+      tools,
+      generated_at: generatedAt,
+      meta: {
+        mode: "planner",
+        intent: plan.intent,
+        confidence: plan.confidence,
+      },
+    };
   }
 
   callTool(name: string, args: Record<string, unknown>): unknown {
@@ -347,49 +284,7 @@ export class OpsContext {
     }
   }
 
-  private resolveQuery(query: string): Brief | null {
-    const trimmed = query.trim();
-    if (!trimmed) return null;
-    const lower = trimmed.toLowerCase();
-    if (lower.includes("morning digest") || lower.includes("ops digest") || lower.includes("daily brief")) {
-      return this.buildMorningDigest().brief;
-    }
-    if (lower.includes("breach") && lower.includes("sla")) {
-      const weeksMatch = lower.match(/(\d+)\s*weeks?/);
-      return this.whoBreachesSlaOnSlip(weeksMatch ? parseInt(weeksMatch[1] ?? "4", 10) : 4);
-    }
-    const scenario = this.parseScenarioQuery(trimmed);
-    if (scenario) return this.buildScenarioBrief(scenario.deploymentId, scenario.slipWeeks);
-    const tranche = this.parseTrancheQuery(trimmed);
-    if (tranche) return this.buildTrancheBrief(tranche);
-    if (lower.includes("fleet") && (lower.includes("summary") || lower.includes("total") || lower.includes("mw"))) {
-      const f = this.getFleetSummary();
-      return {
-        summary: `Fleet summary: ${f.total_contracted_mw} MW contracted, ${f.total_available_mw} MW available, ${f.total_gap_mw} MW gap. Bridge gap ${f.by_type.bridge.gap_mw} MW; permanent gap ${f.by_type.permanent.gap_mw} MW.`,
-        severity: f.total_gap_mw > 15 ? "high" : "medium",
-        recommended_actions: ["Review GFA tranche rollups on /fleet.", "Check pipeline deadlines on /pipeline."],
-        citations: [{ source: "fleet.summary" }],
-      };
-    }
-    if (lower.includes("open exception") || lower.includes("what exceptions") || lower.includes("exception queue")) {
-      return this.buildExceptionQueueBrief();
-    }
-    const idMatch = trimmed.match(/\b(BRG|PRM)-\d{4}\b/i);
-    if (idMatch) {
-      const dep = this.getDeployment(idMatch[0].toUpperCase());
-      if (dep) return this.buildBriefForDeployment(dep);
-    }
-    if (lower.includes("red") || lower.includes("what happened")) {
-      const id = trimmed.match(/\b(BRG|PRM)-\d{4}\b/i);
-      if (id) {
-        const dep = this.getDeployment(id[0].toUpperCase());
-        if (dep) return this.buildBriefForDeployment(dep);
-      }
-    }
-    return null;
-  }
-
-  private buildBriefForDeployment(deployment: Deployment): Brief {
+  buildBriefForDeployment(deployment: Deployment): Brief {
     const severity = this.severityFor(deployment);
     const gap = deployment.mw_contracted - deployment.mw_available;
     const citations: Citation[] = [
@@ -418,7 +313,7 @@ export class OpsContext {
     };
   }
 
-  private buildExceptionQueueBrief(): Brief {
+  buildExceptionQueueBrief(): Brief {
     const items = this.listExceptions();
     const citations = items.map((d) => ({ deployment_id: d.id, exception_code: d.exception_code, source: `deployments.json#${d.id}` }));
     const lines = items.map((d) => `${d.id}: ${d.exception_code ?? "WATCH"} — ${d.exception_summary ?? d.name}`);
@@ -431,7 +326,7 @@ export class OpsContext {
     };
   }
 
-  private buildScenarioBrief(deploymentId: string, slipWeeks: number): Brief | null {
+  buildScenarioBrief(deploymentId: string, slipWeeks: number): Brief | null {
     const result = this.runInterconnectionSlip(deploymentId, slipWeeks);
     if (!result) return null;
     const dep = this.getDeployment(deploymentId)!;
@@ -447,7 +342,7 @@ export class OpsContext {
     };
   }
 
-  private buildTrancheBrief(tranche: string): Brief | null {
+  buildTrancheBrief(tranche: string): Brief | null {
     const bucket = this.getFleetSummary().by_tranche[tranche];
     if (!bucket) return null;
     return {
@@ -458,7 +353,91 @@ export class OpsContext {
     };
   }
 
-  private whoBreachesSlaOnSlip(slipWeeks: number): Brief {
+  buildPipelineDeadlinesBrief(withinDays = 14): Brief {
+    const upcoming = this.upcomingDeadlines(withinDays);
+    const citations = upcoming.map((p) => ({
+      deployment_id: p.deployment.id,
+      source: `pipeline.deadline#${p.deployment.id}`,
+    }));
+    if (!citations.length) {
+      return {
+        summary: `No commissioning deadlines in the next ${withinDays} days.`,
+        severity: "low",
+        recommended_actions: ["Check /pipeline for full bridge-to-permanent schedule."],
+        citations: [{ source: "pipeline.deadlines" }],
+      };
+    }
+    const lines = upcoming.map(
+      (p) =>
+        `${p.deployment.id} (${p.customer}): ${p.days_to_deadline}d, ${p.mw_gap} MW gap` +
+        (p.flags.length ? ` [${p.flags.join(", ")}]` : "")
+    );
+    const overdue = upcoming.filter((p) => (p.days_to_deadline ?? 0) < 0);
+    return {
+      summary: `${upcoming.length} commissioning deadlines in next ${withinDays}d: ${lines.join(" | ")}.`,
+      severity: overdue.length ? "critical" : upcoming.some((p) => (p.days_to_deadline ?? 99) <= 7) ? "high" : "medium",
+      recommended_actions: [
+        "Confirm runbook owners for sites inside 7d window.",
+        "Escalate overdue commissioning to customer ops.",
+      ],
+      citations: citations.length ? citations : [{ source: "pipeline.deadlines" }],
+    };
+  }
+
+  buildRunbookBrief(exceptionCode: string, deploymentId?: string | null): Brief {
+    const rb = this.getRunbookSnippet(exceptionCode);
+    const citations: Citation[] = [{ exception_code: exceptionCode, source: `runbooks.json#${exceptionCode}` }];
+    if (deploymentId) citations.unshift({ deployment_id: deploymentId, source: `deployments.json#${deploymentId}` });
+    if (!rb) {
+      return {
+        summary: `No runbook on file for ${exceptionCode}.`,
+        severity: "medium",
+        recommended_actions: ["Escalate to engineering for ad-hoc procedure.", "Log exception in shift notes."],
+        citations,
+      };
+    }
+    return {
+      summary: `${rb.title} (${exceptionCode}): ${rb.steps.join(" → ")}`,
+      severity: "medium",
+      recommended_actions: rb.steps.slice(0, 4),
+      citations,
+    };
+  }
+
+  buildCompareBrief(idA: string, idB: string): Brief {
+    const a = this.getDeployment(idA);
+    const b = this.getDeployment(idB);
+    if (!a || !b) {
+      return {
+        summary: `Cannot compare — missing deployment ${!a ? idA : idB}.`,
+        severity: "low",
+        recommended_actions: ["Verify both IDs exist in the queue."],
+        citations: [{ source: "system.compare" }],
+      };
+    }
+    const gapA = a.mw_contracted - a.mw_available;
+    const gapB = b.mw_contracted - b.mw_available;
+    const riskA = this.riskScore(a);
+    const riskB = this.riskScore(b);
+    return {
+      summary: [
+        `${idA}: ${a.status}, risk ${riskA}, ${gapA} MW gap, SLA ${this.slaFor(a.customer_id)}%.`,
+        `${idB}: ${b.status}, risk ${riskB}, ${gapB} MW gap, SLA ${this.slaFor(b.customer_id)}%.`,
+        riskA > riskB ? `${idA} ranks higher risk.` : riskB > riskA ? `${idB} ranks higher risk.` : "Both rank similarly.",
+      ].join(" "),
+      severity: Math.max(riskA, riskB) >= 70 ? "critical" : Math.max(riskA, riskB) >= 50 ? "high" : "medium",
+      recommended_actions: [
+        `Triage ${riskA >= riskB ? idA : idB} first.`,
+        "Pull contract terms for both customers.",
+      ],
+      citations: [
+        { deployment_id: idA, source: `deployments.json#${idA}` },
+        { deployment_id: idB, source: `deployments.json#${idB}` },
+      ],
+    };
+  }
+
+  whoBreachesSlaOnSlip(slipWeeks: number): Brief {
     const atRisk = this.data.deployments.filter((d) => {
       if (d.status === "healthy") return false;
       return this.runInterconnectionSlip(d.id, slipWeeks)?.sla_at_risk;
@@ -482,51 +461,6 @@ export class OpsContext {
     if (deployment.status === "exception") return "high";
     if (deployment.status === "watch") return "medium";
     return "low";
-  }
-
-  private parseScenarioQuery(query: string): { deploymentId: string; slipWeeks: number } | null {
-    const lower = query.toLowerCase();
-    if (!lower.includes("slip") && !lower.includes("weeks")) return null;
-    const idMatch = query.match(/\b(BRG|PRM)-\d{4}\b/i);
-    if (!idMatch) return null;
-    const weeksMatch = lower.match(/(\d+)\s*(?:more\s+)?weeks?/);
-    return { deploymentId: idMatch[0].toUpperCase(), slipWeeks: weeksMatch ? parseInt(weeksMatch[1] ?? "4", 10) : 4 };
-  }
-
-  private parseTrancheQuery(query: string): string | null {
-    const lower = query.toLowerCase();
-    if (!lower.includes("gfa") && !lower.includes("tranche")) return null;
-    const match = query.match(/\d{4}-(?:H[12]|Q[1-4])/i);
-    return match ? match[0].toUpperCase().replace("h", "H").replace("q", "Q") : null;
-  }
-
-  private extractDeploymentIds(text: string): string[] {
-    const matches = text.match(/\b(BRG|PRM)-\d{4}\b/gi) ?? [];
-    return [...new Set(matches.map((m) => m.toUpperCase()))];
-  }
-
-  private wantsExceptionList(text: string): boolean {
-    const lower = text.toLowerCase();
-    return lower.includes("open exception") || lower.includes("what exceptions") || lower.includes("exception queue") || lower.includes("all exceptions");
-  }
-
-  private wantsMorningDigest(text: string): boolean {
-    const lower = text.toLowerCase();
-    return lower.includes("morning digest") || lower.includes("ops digest") || lower.includes("daily brief");
-  }
-
-  private wantsFleetSummary(text: string): boolean {
-    const lower = text.toLowerCase();
-    return lower.includes("fleet") && (lower.includes("summary") || lower.includes("mw") || lower.includes("total"));
-  }
-
-  private wantsSlaBreachScan(text: string): boolean {
-    const lower = text.toLowerCase();
-    return lower.includes("breach") && lower.includes("sla");
-  }
-
-  private logTool(tool: string, args: Record<string, unknown>, result: unknown, trace: ToolLogEntry[]) {
-    trace.push({ tool, args, result });
   }
 
   private bucketAdd(bucket: MwBucket, d: Deployment) {

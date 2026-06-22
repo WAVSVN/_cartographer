@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { NAV } from "@/lib/ui-copy";
 
 const LINKS = [
-  { href: "/", label: "Console" },
-  { href: "/fleet", label: "Fleet" },
-  { href: "/pipeline", label: "Pipeline" },
-  { href: "/about", label: "About" },
+  { href: "/", ...NAV.console },
+  { href: "/fleet", ...NAV.fleet },
+  { href: "/pipeline", ...NAV.pipeline },
+  { href: "/about", ...NAV.about },
 ];
 
 export default function Nav() {
@@ -20,11 +21,12 @@ export default function Nav() {
           <Link
             key={l.href}
             href={l.href}
+            title={l.title}
             aria-current={active ? "page" : undefined}
-            className={`border-b-2 pb-0.5 transition ${
+            className={`border-b-2 pb-0.5 lowercase tracking-wide transition ${
               active
-                ? "border-ops-link font-medium text-ops-text"
-                : "border-transparent text-ops-muted hover:border-ops-line hover:text-ops-text"
+                ? "border-ops-accent font-medium text-ops-accent"
+                : "border-transparent text-ops-chrome hover:border-ops-green/40 hover:text-ops-green"
             }`}
           >
             {l.label}
